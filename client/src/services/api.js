@@ -1,6 +1,9 @@
 import axios from "axios";
 
-const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+let BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+if (BASE_URL && !BASE_URL.endsWith('/api') && !BASE_URL.endsWith('/api/')) {
+  BASE_URL = BASE_URL.endsWith('/') ? `${BASE_URL}api` : `${BASE_URL}/api`;
+}
 const TOKEN_KEY = "ayurveda-token";
 const USER_KEY = "ayurveda-user";
 const LANG_KEY = "ayurveda-lang";
