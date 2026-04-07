@@ -225,6 +225,7 @@
   .hamburger { display: flex; }
   .mobileMenu { display: flex; }
   .searchHint { display: none; }
+  .dropdown { display: none !important; }
 }
 
 @media (max-width: 768px) {

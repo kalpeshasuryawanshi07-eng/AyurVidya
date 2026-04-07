@@ -11,7 +11,8 @@ export default function Navbar() {
   const { user, logoutUser, isAdmin } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -35,14 +36,15 @@ export default function Navbar() {
   const handleLogout = () => {
     logoutUser();
     navigate("/");
-    setMenuOpen(false);
+    setMobileMenuOpen(false);
+    setUserMenuOpen(false);
   };
 
   return (
     <>
       <nav className={`${styles.navbar}${scrolled ? ` ${styles.scrolled}` : ""}`}>
         <div className={styles.inner}>
-          <Link to="/" className={styles.logo} onClick={() => setMenuOpen(false)}>
+          <Link to="/" className={styles.logo} onClick={() => { setMobileMenuOpen(false); setUserMenuOpen(false); }}>
             <span className={styles.logoIcon}>🌿</span>
             <span className={styles.logoText}>AyurvedaLearn</span>
           </Link>
@@ -84,23 +86,26 @@ export default function Navbar() {
                 <span className={styles.userName}>
                   {user.name}
                 </span>
-                <button className={styles.avatar} onClick={() => setMenuOpen((open) => !open)}>
+                <button className={styles.avatar} onClick={() => { 
+                  setUserMenuOpen((open) => !open);
+                  setMobileMenuOpen(false); // Close mobile menu if desktop menu opens
+                }}>
                   {user.name?.[0]?.toUpperCase() || "U"}
                 </button>
-                {menuOpen && (
+                {userMenuOpen && (
                   <div className={styles.dropdown}>
                     <div className={styles.dropdownHeader}>
                       <strong>{user.name}</strong>
                       <span className="text-muted">{user.email}</span>
                     </div>
-                    <Link to="/dashboard" className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
+                    <Link to="/dashboard" className={styles.dropdownItem} onClick={() => setUserMenuOpen(false)}>
                       📊 {t("nav.dashboard")}
                     </Link>
-                    <Link to="/my-courses" className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
+                    <Link to="/my-courses" className={styles.dropdownItem} onClick={() => setUserMenuOpen(false)}>
                       🎓 {t("nav.myCourses")}
                     </Link>
                     {isAdmin && (
-                      <Link to="/admin" className={styles.dropdownItem} onClick={() => setMenuOpen(false)}>
+                      <Link to="/admin" className={styles.dropdownItem} onClick={() => setUserMenuOpen(false)}>
                         ⚙️ {t("nav.admin")}
                       </Link>
                     )}
@@ -117,21 +122,24 @@ export default function Navbar() {
               </Link>
             )}
 
-            <button className={styles.hamburger} onClick={() => setMenuOpen((open) => !open)} aria-label="Menu">
-              {menuOpen ? "✕" : "☰"}
+            <button className={styles.hamburger} onClick={() => {
+              setMobileMenuOpen((open) => !open);
+              setUserMenuOpen(false); // Close user menu if mobile menu opens
+            }} aria-label="Menu">
+              {mobileMenuOpen ? "✕" : "☰"}
             </button>
           </div>
         </div>
 
-        {menuOpen && (
+        {mobileMenuOpen && (
           <div className={styles.mobileMenu}>
-            <NavLink to="/subjects" onClick={() => setMenuOpen(false)}>{t("nav.subjects")}</NavLink>
-            <NavLink to="/herbs" onClick={() => setMenuOpen(false)}>{t("nav.herbs")}</NavLink>
-            <NavLink to="/courses" onClick={() => setMenuOpen(false)}>{t("nav.courses")}</NavLink>
-            <NavLink to="/prakriti-quiz" onClick={() => setMenuOpen(false)}>{t("nav.prakriti")}</NavLink>
-            {user && <NavLink to="/dashboard" onClick={() => setMenuOpen(false)}>{t("nav.dashboard")}</NavLink>}
-            {user && <NavLink to="/my-courses" onClick={() => setMenuOpen(false)}>{t("nav.myCourses")}</NavLink>}
-            {isAdmin && <NavLink to="/admin" onClick={() => setMenuOpen(false)}>{t("nav.admin")}</NavLink>}
+            <NavLink to="/subjects" onClick={() => setMobileMenuOpen(false)}>{t("nav.subjects")}</NavLink>
+            <NavLink to="/herbs" onClick={() => setMobileMenuOpen(false)}>{t("nav.herbs")}</NavLink>
+            <NavLink to="/courses" onClick={() => setMobileMenuOpen(false)}>{t("nav.courses")}</NavLink>
+            <NavLink to="/prakriti-quiz" onClick={() => setMobileMenuOpen(false)}>{t("nav.prakriti")}</NavLink>
+            {user && <NavLink to="/dashboard" onClick={() => setMobileMenuOpen(false)}>{t("nav.dashboard")}</NavLink>}
+            {user && <NavLink to="/my-courses" onClick={() => setMobileMenuOpen(false)}>{t("nav.myCourses")}</NavLink>}
+            {isAdmin && <NavLink to="/admin" onClick={() => setMobileMenuOpen(false)}>{t("nav.admin")}</NavLink>}
             {user ? (
               <button
                 onClick={handleLogout}
@@ -140,7 +148,7 @@ export default function Navbar() {
                 {t("nav.logout")}
               </button>
             ) : (
-              <Link to="/login" onClick={() => setMenuOpen(false)} className="btn btn-primary" style={{ margin: "0.5rem 1.5rem" }}>
+              <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="btn btn-primary" style={{ margin: "0.5rem 1.5rem" }}>
                 {t("nav.login")}
               </Link>
             )}
