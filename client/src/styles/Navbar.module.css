@@ -92,6 +92,13 @@
   gap: 0.5rem;
   flex-shrink: 0;
 }
+
+@media (max-width: 600px) {
+  .controls {
+    gap: 0.35rem;
+  }
+}
+
 .searchBtn {
   display: flex;
   align-items: center;
@@ -114,6 +121,19 @@
   padding: 0.1rem 0.3rem;
   font-family: var(--font-mono);
 }
+
+.userName {
+  font-size: 0.8rem;
+  margin-right: 0.5rem;
+  color: var(--color-text-light);
+}
+
+@media (max-width: 768px) {
+  .userName {
+    display: none;
+  }
+}
+
 .userMenu { position: relative; }
 .avatar {
   width: 36px;
@@ -206,6 +226,17 @@
   .mobileMenu { display: flex; }
   .searchHint { display: none; }
 }
-@media (max-width: 480px) {
+
+@media (max-width: 768px) {
   .logoText { display: none; }
+}
+
+@media (max-width: 480px) {
+  .controls {
+    gap: 0.25rem;
+  }
+  .searchBtn {
+    padding: 0.4rem 0.5rem;
+  }
+  .searchBtn kbd, .searchHint { display: none; }
 }

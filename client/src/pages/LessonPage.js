@@ -5,6 +5,7 @@ import { getCourseBySlug, markLessonComplete, getCourseProgress, generateCertifi
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 import Loader from "../components/common/Loader";
+import styles from "../styles/LessonPage.module.css";
 
 export default function LessonPage() {
   const { courseSlug } = useParams();
@@ -18,6 +19,7 @@ export default function LessonPage() {
   const [progress, setProgress] = useState(null);
   const [completedLessons, setCompletedLessons] = useState([]);
   const [markingComplete, setMarkingComplete] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -149,11 +151,19 @@ export default function LessonPage() {
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <Navbar />
-      <div style={{ display: "grid", gridTemplateColumns: "320px 1fr", height: "calc(100vh - 64px)", overflow: "hidden" }}>
+      <button 
+        className={styles.mobileToggle}
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+      >
+        <span>📚 {sidebarOpen ? "Close Content" : "Course Content"}</span>
+        <span>{sidebarOpen ? "✕" : "☰"}</span>
+      </button>
+
+      <div className={styles.container}>
         {/* Lesson Sidebar */}
-        <aside style={{ background: "var(--color-surface-card)", borderRight: "1px solid var(--color-border)", padding: "1.5rem 0", overflowY: "auto", height: "100%" }}>
-          <div style={{ padding: "0 1.5rem 1rem", marginBottom: "1rem" }}>
-            <h2 style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--color-text)", marginBottom: "0.5rem" }}>{course?.title}</h2>
+        <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}>
+          <div className={styles.sidebarHeader}>
+            <h2 className={styles.sidebarTitle}>{course?.title}</h2>
             <div style={{ fontSize: "0.85rem", color: "var(--color-text-light)", marginBottom: "0.75rem" }}>
               {lessons.length} Lessons • {course?.duration}
             </div>
@@ -187,7 +197,7 @@ export default function LessonPage() {
               </div>
             )}
           </div>
-          <div style={{ padding: "0 1rem 0.75rem", fontWeight: 600, fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--color-text-light)", borderBottom: "1px solid var(--color-border)", marginBottom: "0.5rem" }}>
+          <div className={styles.courseContentLabel}>
             Course Content
           </div>
           {lessons.map((lesson, i) => {
@@ -195,34 +205,11 @@ export default function LessonPage() {
             return (
             <button
               key={lesson.lessonId}
-              onClick={() => setCurrentLesson(i)}
-              style={{ 
-                width: "100%", 
-                padding: "1rem 1.5rem", 
-                background: currentLesson === i ? "var(--color-surface-alt)" : "none", 
-                border: "none", 
-                borderLeft: currentLesson === i ? "4px solid var(--color-primary)" : "4px solid transparent", 
-                cursor: "pointer", 
-                textAlign: "left", 
-                fontFamily: "var(--font-body)", 
-                fontSize: "0.9rem", 
-                color: currentLesson === i ? "var(--color-primary)" : "var(--color-text-secondary)", 
-                fontWeight: currentLesson === i ? 600 : 400,
-                transition: "all 0.2s ease",
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.25rem"
+              onClick={() => {
+                setCurrentLesson(i);
+                setSidebarOpen(false);
               }}
-              onMouseEnter={(e) => {
-                if (currentLesson !== i) {
-                  e.currentTarget.style.background = "var(--color-surface-hover)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (currentLesson !== i) {
-                  e.currentTarget.style.background = "none";
-                }
-              }}
+              className={`${styles.lessonBtn} ${currentLesson === i ? styles.lessonBtnActive : ""}`}
             >
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <span style={{ 
@@ -264,7 +251,8 @@ export default function LessonPage() {
                 <span style={{ color: "var(--color-text-light)" }}>{lesson.duration} min</span>
               </div>
             </button>
-          )})}
+          );
+        })}
 
           <div style={{ padding: "1.5rem", borderTop: "1px solid var(--color-border)", marginTop: "1rem" }}>
             <Link to={`/courses/${courseSlug}`} className="btn btn-ghost btn-sm w-full">← Back to Course</Link>
@@ -272,12 +260,7 @@ export default function LessonPage() {
         </aside>
 
         {/* Lesson Content */}
-        <main style={{ 
-          padding: "3rem 5rem", 
-          width: "100%",
-          overflowY: "auto",
-          height: "100%"
-        }}>
+        <main className={styles.main}>
           <div style={{ marginBottom: "2rem" }}>
             <div style={{ 
               display: "inline-block",

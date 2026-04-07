@@ -81,7 +81,7 @@ export default function Navbar() {
 
             {user ? (
               <div className={styles.userMenu}>
-                <span className="text-muted" style={{ fontSize: "0.8rem", marginRight: "0.5rem" }}>
+                <span className={styles.userName}>
                   {user.name}
                 </span>
                 <button className={styles.avatar} onClick={() => setMenuOpen((open) => !open)}>
