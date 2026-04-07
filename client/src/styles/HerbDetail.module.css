@@ -1,0 +1,711 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+.header {
+  background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 100%), url('https://www.transparenttextures.com/patterns/natural-paper.png');
+  padding: 5rem 0 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.header::before {
+  content: "";
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  margin-top: 2rem;
+  z-index: 1;
+  position: relative;
+}
+
+.herbImageWrapper {
+  width: 180px;
+  height: 180px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.herbImageWrapper:hover {
+  transform: scale(1.05) rotate(2deg);
+}
+
+.herbImage {
+  max-width: 100%;
+  max-height: 100%;
+  filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
+}
+
+.herbEmoji { 
+  font-size: 5rem; 
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+}
+
+.headerInfo h1 {
+  font-family: 'Outfit', sans-serif;
+  color: #fff;
+  font-size: 3.5rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.herbNames { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 0.5rem; 
+  margin-bottom: 1.5rem;
+}
+
+.botanical { 
+  font-family: 'Inter', sans-serif;
+  font-style: italic; 
+  color: rgba(255,255,255,0.8); 
+  font-size: 1.25rem; 
+  font-weight: 300;
+}
+
+.sanskrit { 
+  font-family: var(--font-devanagari); 
+  color: #D8F3DC; 
+  font-size: 1.5rem; 
+  opacity: 0.9;
+}
+
+.badgeRow {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(5px);
+  padding: 0.6rem 1.25rem;
+  border-radius: 100px;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.badge:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr 320px;
+  gap: 3rem;
+  padding: 5rem 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.stickyNav {
+  position: sticky;
+  top: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.navLink {
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  color: #64748b;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  font-family: 'Inter', sans-serif;
+  border-left: 3px solid transparent;
+}
+
+.navLink:hover {
+  background: #f1f5f9;
+  color: #2d6a4f;
+}
+
+.navLinkActive {
+  background: #f0fdf4;
+  color: #2d6a4f;
+  border-left-color: #2d6a4f;
+}
+
+.main { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 4rem;
+}
+
+.section { 
+  scroll-margin-top: 120px;
+  animation: fadeInUp 0.8s ease backwards;
+}
+
+.sectionTitle {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2rem;
+  color: #1e293b;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sectionTitle::after {
+  content: "";
+  height: 2px;
+  flex: 1;
+  background: linear-gradient(to right, #2d6a4f22, transparent);
+}
+
+.sectionCard {
+  background: #fff;
+  border-radius: 24px;
+  padding: 2.5rem;
+  box-shadow: 0 10px 50px rgba(0,0,0,0.03);
+  border: 1px solid rgba(0,0,0,0.04);
+  transition: transform 0.3s ease;
+}
+
+.sectionCard:hover {
+  transform: translateY(-5px);
+}
+
+.aboutText {
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: #334155;
+  font-family: 'Inter', sans-serif;
+}
+
+.propertyGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.propCard {
+  padding: 2rem 1rem;
+  background: #f8fafc;
+  border-radius: 20px;
+  text-align: center;
+  border: 1px solid #edf2f7;
+  transition: all 0.3s ease;
+}
+
+.propCard:hover {
+  border-color: #2d6a4f;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(45, 106, 79, 0.1);
+}
+
+.propLabel {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.propValue {
+  font-size: 1.25rem;
+  color: #1e293b;
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+}
+
+.explanationBox {
+  margin-top: 2rem;
+  padding: 2rem;
+  background: #f0fdf4;
+  border-left: 6px solid #2d6a4f;
+  border-radius: 16px;
+}
+
+.explanationBox p {
+  margin: 0;
+  font-style: italic;
+  color: #3e5a4d;
+  line-height: 1.7;
+}
+
+.doshaGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.doshaItem {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.doshaLabel {
+  width: 80px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.doshaBarWrapper {
+  flex: 1;
+  height: 12px;
+  background: #f1f5f9;
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.doshaBar {
+  height: 100%;
+  border-radius: 100px;
+  transition: width 1s ease-out;
+}
+
+.vataBar { background: #60a5fa; }
+.pittaBar { background: #f87171; }
+.kaphaBar { background: #fbbf24; }
+
+.morphologyGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.morphItem {
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.morphItem .label {
+  font-size: 0.8rem;
+  color: #2d6a4f;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.morphItem .text {
+  color: #334155;
+  line-height: 1.6;
+}
+
+.aside {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.asideCard {
+  background: #fff;
+  border-radius: 24px;
+  padding: 2rem;
+  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+}
+
+.asideTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.indicationGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.indicationChip {
+  padding: 0.5rem 1rem;
+  background: #ecfdf5;
+  color: #065f46;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid #d1fae5;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+:global(body.dark) .sectionCard, :global(body.dark) .asideCard {
+  background: #0f172a;
+  border-color: #1e293b;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+:global(body.dark) .sectionTitle { color: #f1f5f9; }
+:global(body.dark) .aboutText { color: #cbd5e1; }
+:global(body.dark) .navLink:hover { background: #1e293b; }
+:global(body.dark) .navLinkActive { background: #064e3b; color: #dcfce7; }
+:global(body.dark) .propCard,
+:global(body.dark) .morphItem {
+  background: var(--color-surface-alt);
+  border-color: var(--color-border);
+}
+:global(body.dark) .propValue,
+:global(body.dark) .doshaLabel,
+:global(body.dark) .morphItem .text {
+  color: var(--color-text-primary);
+}
+:global(body.dark) .propLabel,
+:global(body.dark) .morphItem .label {
+  color: var(--color-text-light);
+}
+:global(body.dark) .explanationBox {
+  background: rgba(34, 197, 94, 0.12);
+  border-left-color: var(--color-primary-light);
+}
+:global(body.dark) .explanationBox p {
+  color: var(--color-text-secondary);
+}
+:global(body.dark) .doshaBarWrapper {
+  background: var(--color-border);
+}
+:global(body.dark) .indicationChip {
+  background: rgba(34, 197, 94, 0.16);
+  color: #b6f7d1;
+  border-color: rgba(34, 197, 94, 0.3);
+}
+:global(body.dark) .vivaSection {
+  background: var(--color-surface-alt);
+  border-color: #5f4b2f;
+}
+:global(body.dark) .manuscriptBox,
+:global(body.dark) .ganaItem,
+:global(body.dark) .karmaItem,
+:global(body.dark) .formulationItem,
+:global(body.dark) .phytochemChip {
+  background: var(--color-surface-card);
+  border-color: var(--color-border);
+}
+:global(body.dark) .etymologyHeading,
+:global(body.dark) .karmaName {
+  color: var(--color-gold);
+}
+:global(body.dark) .karmaDetail,
+:global(body.dark) .formulationDetail,
+:global(body.dark) .synonymMeaning,
+:global(body.dark) .academicSubTitle {
+  color: var(--color-text-secondary);
+}
+:global(body.dark) .synonymItem,
+:global(body.dark) .formulationName,
+:global(body.dark) .phytochemName {
+  color: var(--color-text-primary);
+}
+:global(body.dark) .synonymRow {
+  border-bottom-color: var(--color-border);
+}
+:global(body.dark) .researchCard {
+  background: var(--color-surface-alt);
+  border-left-color: var(--color-primary-light);
+}
+:global(body.dark) .evidenceBadge {
+  background: var(--color-primary);
+}
+:global(body.dark) .safetyBox {
+  background: var(--color-danger-bg);
+  border-color: var(--color-danger-border);
+}
+:global(body.dark) .safetyTitle {
+  color: var(--color-danger-text);
+}
+
+@media (max-width: 1200px) {
+  .layout { grid-template-columns: 200px 1fr; }
+  .aside { grid-column: span 2; display: grid; grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .stickyNav { display: none; }
+  .aside { grid-template-columns: 1fr; }
+  .headerContent { flex-direction: column; text-align: center; gap: 2rem; }
+  .header h1 { font-size: 2.5rem; }
+}
+
+/* ACADEMIC ENHANCEMENTS */
+.vivaSection {
+  background: #fdfaf3;
+  border: 1px solid #e9d8a6;
+  border-radius: 24px;
+  padding: 3rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.vivaSection::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 10px;
+  background: linear-gradient(to right, #9b2226, #ae2012, #9b2226);
+}
+
+.manuscriptBox {
+  font-family: var(--font-devanagari);
+  padding: 2rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.02);
+  line-height: 2;
+}
+
+.etymologyHeading {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: #9b2226;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.ganasGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.ganaItem {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid #f1f5f9;
+}
+
+.researchCard {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 16px;
+  border-left: 5px solid #2d6a4f;
+  margin-bottom: 1.5rem;
+}
+
+.evidenceBadge {
+  align-self: flex-start;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #2d6a4f;
+  color: #fff;
+}
+
+.safetyBox {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  padding: 2rem;
+  border-radius: 20px;
+}
+
+.safetyTitle {
+  color: #991b1b;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.synonymRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  column-gap: 1.25rem;
+  align-items: start;
+  padding: 1rem 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.synonymItem {
+  display: block;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.synonymMeaning {
+  display: block;
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+/* HIGH DENSITY ACADEMIC STYLES */
+.academicGrid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 2.5rem;
+}
+
+.academicCol {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.karmaGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.karmaItem {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1px solid #e9d8a6;
+  border-left: 4px solid #9b2226;
+  transition: transform 0.2s ease;
+}
+
+.karmaItem:hover {
+  transform: translateX(5px);
+}
+
+.karmaName {
+  font-family: var(--font-devanagari);
+  font-weight: 700;
+  color: #9b2226;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.karmaDetail {
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+.formulationList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.formulationItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #fdfdfd;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.formulationName {
+  font-weight: 600;
+  color: #1b4332;
+  font-family: var(--font-devanagari);
+}
+
+.formulationDetail {
+  font-size: 0.85rem;
+  color: #64748b;
+  background: #f1f5f9;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+}
+
+.phytochemGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.phytochemChip {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  padding: 0.5rem 1rem;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.phytochemName {
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 0.9rem;
+}
+
+.phytochemDetail {
+  font-size: 0.8rem;
+  color: #64748b;
+  border-left: 1px solid #e2e8f0;
+  padding-left: 0.5rem;
+}
+
+.usageLayout {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 2rem;
+}
+
+.dosageValue {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #064e3b;
+  margin-bottom: 0.5rem;
+  font-family: 'Outfit', sans-serif;
+}
+
+.subHeading {
+  color: #2d6a4f;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.academicSubTitle {
+  font-size: 0.8rem;
+  color: #64748b;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  letter-spacing: 0.05em;
+}
+
+@media (max-width: 640px) {
+  .synonymRow {
+    grid-template-columns: 1fr;
+    row-gap: 0.45rem;
+  }
+}

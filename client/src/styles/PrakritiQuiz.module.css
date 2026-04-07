@@ -1,0 +1,119 @@
+.quizPage {
+  min-height: calc(100vh - var(--navbar-height) - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  background: var(--color-surface-alt);
+}
+.quizCard {
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 560px;
+  box-shadow: var(--shadow-lg);
+}
+.quizHeader { text-align: center; margin-bottom: 2rem; }
+.quizHeader h1 { font-size: 1.75rem; color: var(--color-primary); margin-bottom: 0.5rem; }
+.quizHeader p  { color: var(--color-text-secondary); margin: 0; }
+.progressInfo { font-size: 0.85rem; color: var(--color-text-light); margin-bottom: 0.5rem; text-align: center; }
+.progressTrack {
+  height: 6px;
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-pill);
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  border-radius: var(--radius-pill);
+  transition: width 0.4s ease;
+}
+.question {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-align: center;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  min-height: 60px;
+}
+.scaleLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  margin-bottom: 0.75rem;
+}
+.scaleButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+.scaleBtn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  background: var(--color-surface-card);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font-body);
+}
+.scaleBtn:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+/* Result */
+.resultPage {
+  min-height: calc(100vh - var(--navbar-height) - 200px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  background: var(--color-surface-alt);
+}
+.resultCard {
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+.resultEmoji { font-size: 4rem; margin-bottom: 1rem; }
+.resultTitle { font-size: 1.75rem; color: var(--color-primary); margin-bottom: 1rem; }
+.resultDesc { color: var(--color-text-secondary); margin: 1rem 0 1.5rem; line-height: 1.7; }
+.doshaChart { margin: 1.5rem 0; text-align: left; }
+.doshaBar { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; }
+.doshaBarLabel { width: 50px; font-weight: 600; font-size: 0.875rem; }
+.doshaBarTrack { flex: 1; height: 12px; background: var(--color-surface-alt); border-radius: var(--radius-pill); overflow: hidden; }
+.doshaBarFill { height: 100%; border-radius: var(--radius-pill); transition: width 0.8s ease; }
+.doshaBarPct { width: 40px; font-size: 0.8rem; font-weight: 700; color: var(--color-text-secondary); }
+.recommendations {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+  text-align: left;
+}
+.recSection h3 { font-size: 0.95rem; color: var(--color-primary); margin-bottom: 0.75rem; }
+.recSection ul { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+.recSection li { font-size: 0.82rem; color: var(--color-text-secondary); padding-left: 1rem; position: relative; }
+.recSection li::before { content: "•"; position: absolute; left: 0; color: var(--color-primary); }
+@media (max-width: 480px) {
+  .recommendations { grid-template-columns: 1fr; }
+  .scaleButtons { gap: 0.5rem; }
+  .scaleBtn { width: 44px; height: 44px; font-size: 1rem; }
+}

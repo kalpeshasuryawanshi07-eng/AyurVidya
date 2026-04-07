@@ -1,0 +1,41 @@
+.toc {
+  padding: 1.5rem 1rem;
+  height: calc(100vh - var(--navbar-height));
+  overflow-y: auto;
+  position: sticky;
+  top: var(--navbar-height);
+  border-left: 1px solid var(--color-border);
+}
+.tocTitle {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-light);
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+.tocLink {
+  display: block;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.78rem;
+  color: var(--color-text-light);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+  line-height: 1.4;
+  margin-bottom: 0.1rem;
+}
+.tocLink:hover { color: var(--color-primary); border-left-color: var(--color-border); }
+.tocActive {
+  color: var(--color-primary) !important;
+  border-left-color: var(--color-primary) !important;
+  font-weight: 600;
+}
+.tocActions {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}

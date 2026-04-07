@@ -1,0 +1,40 @@
+.herbCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem;
+}
+.herbHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.herbEmoji { font-size: 2rem; }
+.herbName {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0;
+}
+.botanicalName {
+  font-style: italic;
+  font-size: 0.8rem;
+  color: var(--color-text-light);
+}
+.sanskritName {
+  font-family: var(--font-devanagari);
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+.rasaRow { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+.doshaRow { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.desc {
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

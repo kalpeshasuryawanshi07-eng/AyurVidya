@@ -1,0 +1,36 @@
+.header { padding: 3rem 0; }
+.headerContent { display: flex; align-items: flex-start; gap: 1.5rem; margin-top: 1rem; }
+.headerIcon { font-size: 3.5rem; flex-shrink: 0; }
+.topicGrid { display: flex; flex-direction: column; gap: 0.75rem; }
+.topicCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: all 0.15s ease;
+  box-shadow: var(--shadow-sm);
+}
+.topicCard:hover {
+  border-color: var(--color-primary-light);
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
+}
+.topicNum {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.topicInfo { flex: 1; }
+.topicTitle { font-weight: 600; color: var(--color-text-primary); font-size: 0.95rem; margin-bottom: 0.3rem; }
+.topicMeta { display: flex; align-items: center; gap: 0.75rem; }
+.topicArrow { color: var(--color-text-light); font-size: 1.1rem; }

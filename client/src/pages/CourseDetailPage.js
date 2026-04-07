@@ -1,0 +1,400 @@
+import { useEffect, useMemo, useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
+import {
+  getCourseBySlug,
+  getMyCourses,
+  enrollInCourse,
+  initiateCheckout,
+  getCourseProgress,
+  generateCertificate,
+} from "../services/api";
+import Navbar from "../components/layout/Navbar";
+import Footer from "../components/layout/Footer";
+import ScrollToTop from "../components/common/ScrollToTop";
+import Loader from "../components/common/Loader";
+
+const PAYMENT_METHOD_LABELS = {
+  upi: "UPI",
+  card: "Card",
+  netbanking: "Net Banking",
+  wallet: "Wallet",
+  emi: "EMI",
+  paylater: "Pay Later",
+};
+
+export default function CourseDetailPage() {
+  const { courseSlug } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { addToast } = useToast();
+
+  const [course, setCourse] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [enrolling, setEnrolling] = useState(false);
+  const [generatingCert, setGeneratingCert] = useState(false);
+  const [error, setError] = useState("");
+  const [openModule, setOpenModule] = useState(0);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
+  const [enrolledSlugs, setEnrolledSlugs] = useState([]);
+  const [courseProgress, setCourseProgress] = useState(null);
+
+  useEffect(() => {
+    const fetchCourse = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const data = await getCourseBySlug(courseSlug);
+        console.log('Course data received:', data);
+        console.log('Course object:', data.course);
+        console.log('Lessons:', data.course?.lessons);
+        console.log('Lessons length:', data.course?.lessons?.length);
+        setCourse(data.course || null);
+      } catch (err) {
+        if (err.response?.status === 404) {
+          setError("Course not found");
+        } else {
+          setError(err.response?.data?.message || "Failed to load course.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourse();
+  }, [courseSlug]);
+
+  useEffect(() => {
+    if (!user) {
+      setEnrolledSlugs([]);
+      setCourseProgress(null);
+      return;
+    }
+
+    const fetchMyCourses = async () => {
+      try {
+        const data = await getMyCourses();
+        const slugs = (data.courses || []).map((item) => item.slug);
+        setEnrolledSlugs(slugs);
+      } catch {
+        setEnrolledSlugs([]);
+      }
+    };
+
+    const fetchProgress = async () => {
+      if (!courseSlug) return;
+      try {
+        const progressData = await getCourseProgress(courseSlug);
+        setCourseProgress(progressData);
+      } catch {
+        setCourseProgress(null);
+      }
+    };
+
+    fetchMyCourses();
+    fetchProgress();
+  }, [user, courseSlug]);
+
+  const isEnrolled = useMemo(() => {
+    if (!course) return false;
+    return enrolledSlugs.includes(course.slug);
+  }, [course, enrolledSlugs]);
+
+  const availablePaymentMethods = useMemo(() => {
+    if (!course || !course.isPaid || (course.price || 0) === 0) return [];
+    const methods = Array.isArray(course.paymentMethods) ? course.paymentMethods : [];
+    return methods.length > 0 ? methods : ["upi", "card", "netbanking"];
+  }, [course]);
+
+  useEffect(() => {
+    if (availablePaymentMethods.length === 0) {
+      setSelectedPaymentMethod("");
+      return;
+    }
+
+    setSelectedPaymentMethod((previous) => (
+      availablePaymentMethods.includes(previous) ? previous : availablePaymentMethods[0]
+    ));
+  }, [availablePaymentMethods]);
+
+  const handleEnroll = async () => {
+    if (!course) return;
+    if (!user) {
+      addToast("Please login to enroll.", "info");
+      navigate("/login");
+      return;
+    }
+
+    const courseId = course._id || course.id;
+    if (!courseId) {
+      addToast("Unable to start checkout. Missing course identifier.", "error");
+      return;
+    }
+
+    setEnrolling(true);
+    try {
+      if (!course.isPaid || (course.price || 0) === 0) {
+        await enrollInCourse(course.slug);
+        addToast("Successfully enrolled.", "success");
+        setEnrolledSlugs((prev) => Array.from(new Set([...prev, course.slug])));
+      } else {
+        await initiateCheckout(
+          courseId,
+          selectedPaymentMethod || availablePaymentMethods[0],
+          () => {
+            addToast("Payment successful and enrollment completed.", "success");
+            setEnrolledSlugs((prev) => Array.from(new Set([...prev, course.slug])));
+          },
+          (message) => {
+            const normalizedMessage = String(message || "").toLowerCase();
+            if (normalizedMessage.includes("already enrolled")) {
+              setEnrolledSlugs((prev) => Array.from(new Set([...prev, course.slug])));
+              addToast("You are already enrolled in this course.", "info");
+              return;
+            }
+
+            addToast(message || "Payment failed.", "error");
+          }
+        );
+      }
+    } catch (err) {
+      const msg = err?.response?.data?.errors?.[0] || err?.response?.data?.message || "Enrollment failed.";
+      if (String(msg).toLowerCase().includes("already enrolled")) {
+        setEnrolledSlugs((prev) => Array.from(new Set([...prev, course.slug])));
+        addToast("You are already enrolled in this course.", "info");
+      } else {
+        addToast(msg, "error");
+      }
+    } finally {
+      setEnrolling(false);
+    }
+  };
+
+  const handleGenerateCertificate = async () => {
+    if (!user) {
+      addToast("Please login to generate certificate.", "info");
+      navigate("/login");
+      return;
+    }
+
+    setGeneratingCert(true);
+    try {
+      await generateCertificate(courseSlug);
+      addToast("Certificate generated successfully!", "success");
+      setTimeout(() => {
+        navigate("/certificates");
+      }, 1500);
+    } catch (err) {
+      const msg = err?.response?.data?.errors?.[0] || err?.response?.data?.message || "Failed to generate certificate.";
+      addToast(msg, "error");
+    } finally {
+      setGeneratingCert(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div>
+        <Navbar />
+        <Loader />
+      </div>
+    );
+  }
+
+  if (!course || error) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+        <Navbar />
+        <div className="empty-state">
+          <div className="empty-state-icon">C</div>
+          <h3>{error || "Course not found"}</h3>
+          <Link to="/courses" className="btn btn-primary mt-2">
+            Back to Courses
+          </Link>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  const lessons = Array.isArray(course.lessons) ? course.lessons : [];
+  console.log('Rendering CourseDetailPage');
+  console.log('Course:', course);
+  console.log('Lessons array:', lessons);
+  console.log('Lessons length:', lessons.length);
+  const modules = [];
+  for (let i = 0; i < lessons.length; i += 5) {
+    modules.push({
+      title: `Module ${Math.floor(i / 5) + 1}`,
+      lessons: lessons.slice(i, i + 5),
+    });
+  }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      <Navbar />
+      <main style={{ flex: 1 }}>
+        <div style={{ background: "linear-gradient(135deg, #1B4332, #2D6A4F)", padding: "3rem 0", color: "#fff" }}>
+          <div className="container">
+            <div className="breadcrumb" style={{ color: "rgba(255,255,255,0.7)" }}>
+              <Link to="/" style={{ color: "rgba(255,255,255,0.7)" }}>
+                Home
+              </Link>
+              <span className="breadcrumb-sep">/</span>
+              <Link to="/courses" style={{ color: "rgba(255,255,255,0.7)" }}>
+                Courses
+              </Link>
+              <span className="breadcrumb-sep">/</span>
+              <span style={{ color: "#fff" }}>{course.title}</span>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "2rem", marginTop: "1.5rem", alignItems: "start" }}>
+              <div>
+                <h1 style={{ color: "#fff", marginBottom: "0.75rem" }}>{course.title}</h1>
+                <p style={{ color: "rgba(255,255,255,0.85)", marginBottom: "1rem" }}>{course.description}</p>
+                <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", fontSize: "0.875rem", color: "rgba(255,255,255,0.8)" }}>
+                  <span>Level: {course.level || "beginner"}</span>
+                  <span>Duration: {course.duration ? `${course.duration} hrs` : "Self-paced"}</span>
+                  <span>Students: {(course.enrollmentCount || 0).toLocaleString()}</span>
+                  <span>Rating: {course.rating || 0}</span>
+                </div>
+              </div>
+              <div style={{ background: "var(--color-surface-card)", borderRadius: "var(--radius-md)", padding: "1.5rem", boxShadow: "var(--shadow-lg)" }}>
+                <div style={{ fontSize: "1.75rem", fontWeight: 700, color: "var(--color-primary)", marginBottom: "0.5rem" }}>
+                  {!course.isPaid || (course.price || 0) === 0 ? "Free" : `INR ${course.price}`}
+                </div>
+                
+                {/* Show progress if enrolled */}
+                {isEnrolled && courseProgress && (
+                  <div style={{ marginBottom: "1rem", padding: "1rem", background: "var(--color-surface-alt)", borderRadius: "var(--radius-sm)" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                      <span style={{ fontSize: "0.875rem", fontWeight: 600, color: "var(--color-text)" }}>
+                        Course Progress
+                      </span>
+                      <span style={{ fontSize: "1rem", fontWeight: 700, color: "var(--color-primary)" }}>
+                        {courseProgress.progress}%
+                      </span>
+                    </div>
+                    <div style={{ 
+                      width: "100%", 
+                      height: "8px", 
+                      background: "var(--color-surface)", 
+                      borderRadius: "4px",
+                      overflow: "hidden"
+                    }}>
+                      <div style={{ 
+                        width: `${courseProgress.progress}%`, 
+                        height: "100%", 
+                        background: "var(--color-primary)",
+                        transition: "width 0.3s ease"
+                      }} />
+                    </div>
+                    <div style={{ fontSize: "0.75rem", color: "var(--color-text-light)", marginTop: "0.5rem" }}>
+                      {courseProgress.completedLessons?.length || 0} of {courseProgress.totalLessons || 0} lessons completed
+                    </div>
+                  </div>
+                )}
+
+                {/* Certificate button - show if course is completed */}
+                {isEnrolled && courseProgress?.progress === 100 ? (
+                  <button 
+                    className="btn btn-success w-full" 
+                    onClick={handleGenerateCertificate}
+                    disabled={generatingCert}
+                    style={{ marginBottom: "0.75rem" }}
+                  >
+                    {generatingCert ? "Generating..." : "🎓 Generate Certificate"}
+                  </button>
+                ) : null}
+
+                {/* Continue Learning or Enroll button */}
+                {isEnrolled ? (
+                  <Link to={`/courses/${courseSlug}/learn`} className="btn btn-primary w-full">
+                    Continue Learning →
+                  </Link>
+                ) : (
+                  <button className="btn btn-primary w-full" onClick={handleEnroll} disabled={enrolling}>
+                    {enrolling ? "Processing..." : !course.isPaid || (course.price || 0) === 0 ? "Enroll Free" : "Enroll Now"}
+                  </button>
+                )}
+                
+                {!isEnrolled && course.isPaid && (course.price || 0) > 0 && availablePaymentMethods.length > 0 && (
+                  <div style={{ marginTop: "0.9rem" }}>
+                    <div style={{ fontSize: "0.8rem", color: "var(--color-text-light)", marginBottom: "0.45rem", fontWeight: 600 }}>
+                      Choose Payment Method
+                    </div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                      {availablePaymentMethods.map((method) => {
+                        const isSelected = selectedPaymentMethod === method;
+                        return (
+                          <button
+                            key={method}
+                            type="button"
+                            onClick={() => setSelectedPaymentMethod(method)}
+                            style={{
+                              border: isSelected ? "1px solid var(--color-primary)" : "1px solid var(--color-border)",
+                              background: isSelected ? "var(--color-primary)" : "var(--color-surface-alt)",
+                              color: isSelected ? "#fff" : "var(--color-text-secondary)",
+                              borderRadius: "var(--radius-pill)",
+                              padding: "0.35rem 0.7rem",
+                              fontSize: "0.75rem",
+                              fontWeight: 600,
+                              cursor: "pointer",
+                              fontFamily: "var(--font-body)",
+                            }}
+                          >
+                            {PAYMENT_METHOD_LABELS[method] || method}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+                <div style={{ marginTop: "1rem", fontSize: "0.8rem", color: "var(--color-text-light)", textAlign: "center" }}>
+                  {!course.isPaid || (course.price || 0) === 0
+                    ? "No payment required"
+                    : `Secure payment via Razorpay${selectedPaymentMethod ? ` (${PAYMENT_METHOD_LABELS[selectedPaymentMethod] || selectedPaymentMethod})` : ""}`}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="container" style={{ padding: "2rem 1.5rem" }}>
+          <h2 className="section-heading">Course Curriculum</h2>
+          {lessons.length === 0 && (
+            <div style={{ padding: "2rem", textAlign: "center", background: "var(--color-surface-alt)", borderRadius: "var(--radius-md)", marginBottom: "1rem" }}>
+              <p className="text-muted">Curriculum will be published soon.</p>
+              <p style={{ fontSize: "0.875rem", color: "var(--color-text-light)", marginTop: "0.5rem" }}>
+                Check browser console for debugging info
+              </p>
+            </div>
+          )}
+          {modules.map((module, index) => (
+            <div key={index} style={{ border: "1px solid var(--color-border)", borderRadius: "var(--radius-md)", marginBottom: "0.75rem", overflow: "hidden" }}>
+              <button
+                style={{ width: "100%", padding: "1rem 1.25rem", background: "var(--color-surface-card)", border: "none", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", fontFamily: "var(--font-body)", fontWeight: 600, fontSize: "0.95rem", color: "var(--color-text-primary)" }}
+                onClick={() => setOpenModule(openModule === index ? -1 : index)}
+              >
+                <span>{module.title}</span>
+                <span>{openModule === index ? "v" : ">"} {module.lessons.length} lessons</span>
+              </button>
+              {openModule === index && (
+                <div style={{ borderTop: "1px solid var(--color-border)" }}>
+                  {module.lessons.map((lesson) => (
+                    <div key={lesson.lessonId} style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.75rem 1.25rem", borderBottom: "1px solid var(--color-border)", fontSize: "0.875rem", color: "var(--color-text-secondary)" }}>
+                      <span style={{ flex: 1 }}>{lesson.title}</span>
+                      <span className="text-muted">{lesson.duration || 0} min</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </main>
+      <Footer />
+      <ScrollToTop />
+    </div>
+  );
+}

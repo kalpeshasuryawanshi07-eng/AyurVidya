@@ -1,0 +1,87 @@
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 1.5rem;
+  padding: 2rem 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
+.main    { display: flex; flex-direction: column; gap: 1.5rem; }
+.greeting {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  margin-bottom: 0.25rem;
+}
+.streakBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #FFF3E0;
+  color: #E65100;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+.statCard {
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  text-align: center;
+}
+.statValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  font-family: var(--font-display);
+}
+.statLabel { font-size: 0.8rem; color: var(--color-text-light); margin-top: 0.25rem; }
+.activityList { display: flex; flex-direction: column; gap: 0.5rem; }
+.activityItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.875rem;
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+}
+.calendarWrap { overflow-x: auto; }
+.calendarMonths {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--color-text-light);
+  margin-bottom: 0.4rem;
+}
+.calendarLegend {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  justify-content: flex-end;
+}
+.subjectProgressList { display: flex; flex-direction: column; gap: 1rem; }
+.subjectProgressItem { display: flex; flex-direction: column; gap: 0.4rem; }
+.subjectProgressLabel {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+}
+@media (max-width: 900px) {
+  .dashboardGrid { grid-template-columns: 1fr; }
+  .statsRow { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .statsRow { grid-template-columns: 1fr; }
+}

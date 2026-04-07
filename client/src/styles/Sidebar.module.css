@@ -1,0 +1,80 @@
+.sidebar {
+  background: var(--color-surface-card);
+  border-right: 1px solid var(--color-border);
+  height: calc(100vh - var(--navbar-height));
+  overflow-y: auto;
+  position: sticky;
+  top: var(--navbar-height);
+}
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem 0.75rem;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-light);
+  border-bottom: 1px solid var(--color-border);
+}
+.subjectGroup { border-bottom: 1px solid var(--color-border); }
+.subjectBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  transition: background 0.15s;
+}
+.subjectBtn:hover { background: var(--color-surface-alt); color: var(--color-primary); }
+.activeSubject { color: var(--color-primary) !important; background: var(--color-surface-alt); }
+.subjectIcon { font-size: 1rem; flex-shrink: 0; }
+.subjectTitle { flex: 1; line-height: 1.3; }
+.chevron { font-size: 0.7rem; color: var(--color-text-light); flex-shrink: 0; }
+.topicList { padding: 0.25rem 0; background: var(--color-surface); }
+.topicLink {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem 0.5rem 1.5rem;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: all 0.15s;
+  line-height: 1.4;
+}
+.topicLink:hover { background: var(--color-surface-alt); color: var(--color-primary); }
+.activeTopic {
+  background: #E8F5E9 !important;
+  color: var(--color-primary) !important;
+  font-weight: 600;
+  border-right: 3px solid var(--color-primary);
+}
+:global(body.dark) .activeTopic { background: rgba(27,67,50,0.3) !important; }
+.topicNum {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  background: var(--color-surface-alt);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-text-light);
+  margin-top: 1px;
+}
+.activeTopic .topicNum {
+  background: var(--color-primary);
+  color: #fff;
+}

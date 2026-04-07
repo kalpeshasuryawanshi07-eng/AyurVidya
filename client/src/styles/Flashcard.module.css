@@ -1,0 +1,36 @@
+.deck { padding: 1rem 0; }
+.deckHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+.deckCount { color: var(--color-primary); font-weight: 700; }
+.deckHint { color: var(--color-text-light); font-size: 0.8rem; }
+.cardLabel {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: var(--color-text-light);
+}
+.deckControls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+.dots { display: flex; gap: 0.4rem; }
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-border);
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+  padding: 0;
+}
+.dotActive { background: var(--color-primary); }

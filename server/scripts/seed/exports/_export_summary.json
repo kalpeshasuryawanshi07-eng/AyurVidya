@@ -1,0 +1,27 @@
+{
+  "export_date": "2026-04-07T04:38:50.653Z",
+  "total_courses_exported": 3,
+  "courses": [
+    {
+      "title": "Foundations of Ayurveda",
+      "slug": "foundations-of-ayurveda",
+      "lessons": 28,
+      "level": "beginner",
+      "filename": "foundations-of-ayurveda_export.json"
+    },
+    {
+      "title": "Dravyaguna Vigyan Mastery",
+      "slug": "dravyaguna-vigyan-mastery",
+      "lessons": 12,
+      "level": "intermediate",
+      "filename": "dravyaguna-vigyan-mastery_export.json"
+    },
+    {
+      "title": "Nadi Pariksha & Clinical Diagnosis",
+      "slug": "nadi-pariksha-clinical-diagnosis",
+      "lessons": 15,
+      "level": "advanced",
+      "filename": "nadi-pariksha-clinical-diagnosis_export.json"
+    }
+  ]
+}

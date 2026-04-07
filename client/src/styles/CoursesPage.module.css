@@ -1,0 +1,35 @@
+.header {
+  background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+  color: #fff;
+  padding: 3rem 0;
+}
+.header h1 { color: #fff; margin-bottom: 0.5rem; }
+.header p  { color: rgba(255,255,255,0.8); margin: 0; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+.courseCard {
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+.courseCard:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+.courseTop { display: flex; justify-content: space-between; align-items: flex-start; }
+.courseEmoji { font-size: 2rem; }
+.courseTitle { font-size: 1rem; font-weight: 700; color: var(--color-primary); margin: 0; }
+.courseDesc { font-size: 0.82rem; color: var(--color-text-secondary); margin: 0; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.courseMeta { display: flex; gap: 0.75rem; flex-wrap: wrap; font-size: 0.78rem; color: var(--color-text-light); }
+.courseStats { display: flex; gap: 1rem; font-size: 0.8rem; color: var(--color-text-secondary); }
+.courseFooter { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 0.75rem; border-top: 1px solid var(--color-border); }
+.priceWrap { display: flex; align-items: center; gap: 0.5rem; }
+.freeLabel { font-size: 1.1rem; font-weight: 700; color: var(--color-success); }
+.discountedPrice { font-size: 1.1rem; font-weight: 700; color: var(--color-primary); }
+.originalPrice { font-size: 0.85rem; color: var(--color-text-light); text-decoration: line-through; }
