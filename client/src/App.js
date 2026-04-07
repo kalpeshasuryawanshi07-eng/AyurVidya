@@ -21,7 +21,6 @@ import LoginPage        from "./pages/LoginPage";
 import AdminPage        from "./pages/AdminPage";
 import AboutPage        from "./pages/AboutPage";
 import CertificatesPage from "./pages/CertificatesPage";
-import VerifyEmail      from "./pages/VerifyEmail";
 import ForgotPassword   from "./pages/ForgotPassword";
 import ResetPassword    from "./pages/ResetPassword";
 import NotFoundPage     from "./pages/NotFoundPage";
@@ -51,7 +50,6 @@ export default function App() {
                 <Route path="/admin"                               element={<AdminPage />} />
                 <Route path="/certificates"                        element={<CertificatesPage />} />
                 <Route path="/about"                               element={<AboutPage />} />
-                <Route path="/verify-email"                        element={<VerifyEmail />} />
                 <Route path="/forgot-password"                     element={<ForgotPassword />} />
                 <Route path="/reset-password"                      element={<ResetPassword />} />
                 <Route path="*"                                    element={<NotFoundPage />} />
