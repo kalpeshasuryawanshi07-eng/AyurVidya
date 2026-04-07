@@ -1,0 +1,98 @@
+.header {
+  background: linear-gradient(135deg, #1B4332, #2D6A4F);
+  padding: 3rem 0;
+  color: #fff;
+}
+
+.headerGrid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 2rem;
+  margin-top: 1.5rem;
+  align-items: start;
+}
+
+.headerInfo h1 {
+  color: #fff;
+  margin-bottom: 0.75rem;
+  font-size: 2.5rem;
+}
+
+.headerMeta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.sidebar {
+  background: var(--color-surface-card);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-lg);
+  position: sticky;
+  top: 100px;
+}
+
+.price {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+}
+
+.curriculumSection {
+  padding: 3rem 0;
+}
+
+.moduleBox {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+}
+
+.moduleButton {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: var(--color-surface-card);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text-primary);
+}
+
+.lessonRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 992px) {
+  .headerGrid {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: static;
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header h1 {
+    font-size: 1.85rem;
+  }
+  .sectionCard {
+    padding: 1.25rem;
+  }
+}

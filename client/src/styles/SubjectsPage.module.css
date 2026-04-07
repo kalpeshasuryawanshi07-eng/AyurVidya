@@ -5,11 +5,21 @@
 }
 .header h1 { color: #fff; margin-bottom: 0.5rem; }
 .header p  { color: rgba(255,255,255,0.8); margin: 0; }
-.yearTabs {
+.tabs {
   display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+  gap: 1rem;
   margin-bottom: 2rem;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 1rem;
+  overflow-x: auto;
+  white-space: nowrap;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+
+@media (max-width: 480px) {
+  .tabs { gap: 0.5rem; margin-bottom: 1.5rem; }
 }
 .yearTab {
   padding: 0.5rem 1.25rem;
@@ -31,8 +41,17 @@
 }
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+}
+
+@media (max-width: 480px) {
+  .grid { grid-template-columns: 1fr; gap: 1rem; }
+  .header h1 { font-size: 1.85rem; }
 }
 .card {
   background: var(--color-surface-card);
@@ -76,6 +95,6 @@
 .icon { font-size: 2.5rem; }
 .cardBody { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
 .cardBody h3 { font-size: 1rem; margin-bottom: 0.5rem; }
-.cardBody p { font-size: 0.82rem; color: var(--color-text-secondary); flex: 1; margin-bottom: 1rem; }
+.cardBody p { font-size: 0.82rem; color: var(--color-text-secondary); flex: 1; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .cardFooter { display: flex; justify-content: space-between; align-items: center; }
 .explore { font-size: 0.85rem; color: var(--color-primary); font-weight: 600; }

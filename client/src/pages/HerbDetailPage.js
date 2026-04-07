@@ -530,7 +530,7 @@ export default function HerbDetailPage() {
                   <p>{pharmacodynamicsExplanation}</p>
                 </div>
 
-                <div style={{ marginTop: "2rem", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+                <div className={styles.academicGrid}>
                   <div className={styles.morphItem}>
                     <span className={styles.label}>{lang === "mr" ? "दोष कर्म" : "Dosha Karma"}</span>
                     <span className={styles.text}>{doshaKarmaText}</span>
@@ -548,7 +548,7 @@ export default function HerbDetailPage() {
                 <span>⚖️</span> {lang === "mr" ? "दोष प्रभाव" : "Dosha Effect"}
               </h2>
               <div className={styles.sectionCard}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: "3rem" }}>
+                <div className={styles.academicGrid}>
                   <div className={styles.doshaGrid}>
                     {["Vata", "Pitta", "Kapha"].map((dosha) => {
                       const key = dosha.toLowerCase();
@@ -567,9 +567,9 @@ export default function HerbDetailPage() {
                       );
                     })}
                   </div>
-                  <div style={{ paddingLeft: "2rem", borderLeft: "1px solid var(--color-border)" }}>
-                    <p style={{ color: "var(--color-text-secondary)", fontSize: "1rem", lineHeight: "1.8" }}>{doshaEffectExplanation}</p>
-                    <div style={{ marginTop: "1rem", fontWeight: "600", color: "var(--color-primary)" }}>
+                  <div className={styles.doshaExplanationCol}>
+                    <p className={styles.doshaText}>{doshaEffectExplanation}</p>
+                    <div className={styles.doshaMainAction}>
                       Main Action: {doshaKarmaText}
                     </div>
                   </div>

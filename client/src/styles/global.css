@@ -95,12 +95,16 @@ body.dark {
    ============================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; font-size: 16px; }
+@media (max-width: 768px) { html { font-size: 15px; } }
+@media (max-width: 480px) { html { font-size: 14px; } }
+
 body {
   font-family: var(--font-body);
   background-color: var(--color-surface);
   color: var(--color-text-primary);
-  line-height: 1.7;
+  line-height: 1.6;
   transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
 }
 img { max-width: 100%; display: block; }
 a { color: var(--color-primary-light); text-decoration: none; }
@@ -127,7 +131,18 @@ p:last-child { margin-bottom: 0; }
 /* ============================================================
    4. UTILITY CLASSES
    ============================================================ */
-.container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+.container {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  width: 100%;
+}
+@media (max-width: 768px) {
+  .container { padding: 0 1.25rem; }
+}
+@media (max-width: 480px) {
+  .container { padding: 0 1rem; }
+}
 .flex       { display: flex; }
 .flex-center { display: flex; align-items: center; justify-content: center; }
 .flex-between { display: flex; align-items: center; justify-content: space-between; }
@@ -413,9 +428,14 @@ body.dark .ayur-table tr:nth-child(even) td { background: rgba(255,255,255,0.03)
    ============================================================ */
 .herb-property-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   gap: 0.75rem;
   margin: 1.5rem 0;
+}
+@media (max-width: 480px) {
+  .herb-property-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 .herb-property-item {
   background: var(--color-surface-alt);

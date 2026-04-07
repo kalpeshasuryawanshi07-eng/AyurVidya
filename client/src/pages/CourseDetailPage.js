@@ -14,6 +14,7 @@ import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import ScrollToTop from "../components/common/ScrollToTop";
 import Loader from "../components/common/Loader";
+import styles from "../styles/CourseDetailPage.module.css";
 
 const PAYMENT_METHOD_LABELS = {
   upi: "UPI",
@@ -235,7 +236,7 @@ export default function CourseDetailPage() {
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <Navbar />
       <main style={{ flex: 1 }}>
-        <div style={{ background: "linear-gradient(135deg, #1B4332, #2D6A4F)", padding: "3rem 0", color: "#fff" }}>
+        <div className={styles.header}>
           <div className="container">
             <div className="breadcrumb" style={{ color: "rgba(255,255,255,0.7)" }}>
               <Link to="/" style={{ color: "rgba(255,255,255,0.7)" }}>
@@ -248,19 +249,19 @@ export default function CourseDetailPage() {
               <span className="breadcrumb-sep">/</span>
               <span style={{ color: "#fff" }}>{course.title}</span>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: "2rem", marginTop: "1.5rem", alignItems: "start" }}>
-              <div>
-                <h1 style={{ color: "#fff", marginBottom: "0.75rem" }}>{course.title}</h1>
-                <p style={{ color: "rgba(255,255,255,0.85)", marginBottom: "1rem" }}>{course.description}</p>
-                <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", fontSize: "0.875rem", color: "rgba(255,255,255,0.8)" }}>
+            <div className={styles.headerGrid}>
+              <div className={styles.headerInfo}>
+                <h1>{course.title}</h1>
+                <p>{course.description}</p>
+                <div className={styles.headerMeta}>
                   <span>Level: {course.level || "beginner"}</span>
                   <span>Duration: {course.duration ? `${course.duration} hrs` : "Self-paced"}</span>
                   <span>Students: {(course.enrollmentCount || 0).toLocaleString()}</span>
                   <span>Rating: {course.rating || 0}</span>
                 </div>
               </div>
-              <div style={{ background: "var(--color-surface-card)", borderRadius: "var(--radius-md)", padding: "1.5rem", boxShadow: "var(--shadow-lg)" }}>
-                <div style={{ fontSize: "1.75rem", fontWeight: 700, color: "var(--color-primary)", marginBottom: "0.5rem" }}>
+              <div className={styles.sidebar}>
+                <div className={styles.price}>
                   {!course.isPaid || (course.price || 0) === 0 ? "Free" : `INR ${course.price}`}
                 </div>
                 
@@ -360,8 +361,9 @@ export default function CourseDetailPage() {
           </div>
         </div>
 
-        <div className="container" style={{ padding: "2rem 1.5rem" }}>
-          <h2 className="section-heading">Course Curriculum</h2>
+        <div className={styles.curriculumSection}>
+          <div className="container">
+            <h2 className="section-heading">Course Curriculum</h2>
           {lessons.length === 0 && (
             <div style={{ padding: "2rem", textAlign: "center", background: "var(--color-surface-alt)", borderRadius: "var(--radius-md)", marginBottom: "1rem" }}>
               <p className="text-muted">Curriculum will be published soon.</p>
@@ -371,9 +373,9 @@ export default function CourseDetailPage() {
             </div>
           )}
           {modules.map((module, index) => (
-            <div key={index} style={{ border: "1px solid var(--color-border)", borderRadius: "var(--radius-md)", marginBottom: "0.75rem", overflow: "hidden" }}>
+            <div key={index} className={styles.moduleBox}>
               <button
-                style={{ width: "100%", padding: "1rem 1.25rem", background: "var(--color-surface-card)", border: "none", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", fontFamily: "var(--font-body)", fontWeight: 600, fontSize: "0.95rem", color: "var(--color-text-primary)" }}
+                className={styles.moduleButton}
                 onClick={() => setOpenModule(openModule === index ? -1 : index)}
               >
                 <span>{module.title}</span>
@@ -382,7 +384,7 @@ export default function CourseDetailPage() {
               {openModule === index && (
                 <div style={{ borderTop: "1px solid var(--color-border)" }}>
                   {module.lessons.map((lesson) => (
-                    <div key={lesson.lessonId} style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.75rem 1.25rem", borderBottom: "1px solid var(--color-border)", fontSize: "0.875rem", color: "var(--color-text-secondary)" }}>
+                    <div key={lesson.lessonId} className={styles.lessonRow}>
                       <span style={{ flex: 1 }}>{lesson.title}</span>
                       <span className="text-muted">{lesson.duration || 0} min</span>
                     </div>
@@ -391,6 +393,7 @@ export default function CourseDetailPage() {
               )}
             </div>
           ))}
+          </div>
         </div>
       </main>
       <Footer />
