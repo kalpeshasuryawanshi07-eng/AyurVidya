@@ -25,10 +25,8 @@ const CourseCardHeader = ({ course }) => {
   
   return (
     <div className={styles.courseCardHeader} 
-         style={{background: config.gradient, borderRadius:'12px 12px 0 0',
-                 height:'80px', display:'flex', alignItems:'center', 
-                 justifyContent:'center', fontSize:'2rem', width: '100%'}}>
-      {config.emoji}
+         style={{background: config.gradient}}>
+      <span className={styles.courseEmoji}>{config.emoji}</span>
     </div>
   );
 };
@@ -77,7 +75,7 @@ export default function CoursesPage() {
           )}
 
           {!loading && !error && (
-            <div className={styles.grid}>
+            <div className={styles.coursesGrid}>
               {courses.map((course) => {
                 const lessonCount = Array.isArray(course.lessons) ? course.lessons.length : 0;
                 const durationLabel = course.duration ? `${course.duration} hrs` : "Self-paced";
@@ -85,34 +83,36 @@ export default function CoursesPage() {
                 return (
                   <div key={course.slug} className={styles.courseCard}>
                     <CourseCardHeader course={course} />
-                    <div className={styles.courseTop}>
-                      <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-                        {levelBadge(course.level)}
-                        {isFree && <span className="badge badge-green">Free</span>}
+                    <div className={styles.courseContent}>
+                      <div className={styles.courseTop}>
+                        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+                          {levelBadge(course.level)}
+                          {isFree && <span className="badge badge-green">Free</span>}
+                        </div>
                       </div>
-                    </div>
-                    <h3 className={styles.courseTitle}>{course.title}</h3>
-                    <p className={styles.courseDesc}>{course.description}</p>
-                    <div className={styles.courseMeta}>
-                      <span>Modules: {Math.max(1, Math.ceil(lessonCount / 5))}</span>
-                      <span>Lessons: {lessonCount}</span>
-                      <span>Duration: {durationLabel}</span>
-                    </div>
-                    <div className={styles.courseStats}>
-                      <span>Students: {(course.enrollmentCount || 0).toLocaleString()}</span>
-                      <span>Rating: {course.rating || 0}</span>
-                    </div>
-                    <div className={styles.courseFooter}>
-                      <div className={styles.priceWrap}>
-                        {isFree ? (
-                          <span className={styles.freeLabel}>Free</span>
-                        ) : (
-                          <span className={styles.discountedPrice}>INR {course.price}</span>
-                        )}
+                      <h3 className={styles.courseTitle}>{course.title}</h3>
+                      <p className={styles.courseDesc}>{course.description}</p>
+                      <div className={styles.courseMeta}>
+                        <span>Modules: {Math.max(1, Math.ceil(lessonCount / 5))}</span>
+                        <span>Lessons: {lessonCount}</span>
+                        <span>Duration: {durationLabel}</span>
                       </div>
-                      <Link to={`/courses/${course.slug}`} className="btn btn-primary btn-sm">
-                        View Course
-                      </Link>
+                      <div className={styles.courseStats}>
+                        <span>Students: {(course.enrollmentCount || 0).toLocaleString()}</span>
+                        <span>Rating: {course.rating || 0}</span>
+                      </div>
+                      <div className={styles.courseFooter}>
+                        <div className={styles.priceWrap}>
+                          {isFree ? (
+                            <span className={styles.freeLabel}>Free</span>
+                          ) : (
+                            <span className={styles.discountedPrice}>INR {course.price}</span>
+                          )}
+                        </div>
+                        <Link to={`/courses/${course.slug}`} className="btn btn-primary btn-sm">
+                          View Course
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 );
