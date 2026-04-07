@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../models/User');
+const EmailService = require('./EmailService');
 
 class AuthService {
   /**
@@ -20,21 +22,32 @@ class AuthService {
       throw error;
     }
 
+    // Generate verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+
     // Create new user (password will be hashed by pre-save hook)
     const user = new User({
       name,
       email,
-      password
+      password,
+      verificationToken,
+      verificationTokenExpires
     });
 
     await user.save();
 
-    // Generate JWT token
-    const token = this._generateToken(user);
+    // Send verification email
+    try {
+      await EmailService.sendVerificationEmail(user.name, user.email, verificationToken);
+    } catch (error) {
+      console.error('Failed to send verification email:', error);
+      // Don't throw, user still created, can resend later
+    }
 
     return {
       user: user.toJSON(),
-      token
+      message: 'Account created. Please check your email to verify.'
     };
   }
 
@@ -61,6 +74,14 @@ class AuthService {
       const error = new Error('Invalid email or password');
       error.name = 'InvalidCredentialsError';
       error.statusCode = 401;
+      throw error;
+    }
+
+    // Check if user is verified
+    if (!user.isVerified) {
+      const error = new Error('Please verify your email address before logging in');
+      error.name = 'EmailNotVerifiedError';
+      error.statusCode = 403;
       throw error;
     }
 
@@ -159,6 +180,85 @@ class AuthService {
       error.statusCode = 404;
       throw error;
     }
+
+    return user.toJSON();
+  }
+
+  /**
+   * Verify user's email with token
+   * @param {string} token - Verification token from email
+   */
+  async verifyEmail(token) {
+    const user = await User.findOne({
+      verificationToken: token,
+      verificationTokenExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      const error = new Error('Invalid or expired verification token');
+      error.name = 'InvalidTokenError';
+      error.statusCode = 400;
+      throw error;
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpires = undefined;
+    await user.save();
+
+    // Send welcome email
+    await EmailService.sendWelcomeEmail(user.name, user.email);
+
+    return user.toJSON();
+  }
+
+  /**
+   * Request password reset
+   * @param {string} email - User's email
+   */
+  async forgotPassword(email) {
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      // Don't reveal user existence
+      return;
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 mins
+    await user.save();
+
+    // Send email with RAW token
+    await EmailService.sendForgotPasswordEmail(user.name, user.email, resetToken);
+  }
+
+  /**
+   * Reset password with token
+   * @param {string} token - Reset token from email
+   * @param {string} newPassword - New password
+   */
+  async resetPassword(token, newPassword) {
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      const error = new Error('Invalid or expired password reset token');
+      error.name = 'InvalidTokenError';
+      error.statusCode = 400;
+      throw error;
+    }
+
+    user.password = newPassword; // Hashed by pre-save hook
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
 
     return user.toJSON();
   }

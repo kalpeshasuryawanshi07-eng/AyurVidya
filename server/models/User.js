@@ -42,7 +42,15 @@ const userSchema = new mongoose.Schema({
       message: '{VALUE} is not a valid language'
     },
     default: 'en'
-  }
+  },
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
+  verificationToken: String,
+  verificationTokenExpires: Date,
+  resetPasswordToken: String,
+  resetPasswordExpires: Date
 }, {
   timestamps: true
 });

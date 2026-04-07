@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 import { useLanguage } from "../context/LanguageContext";
@@ -24,8 +24,8 @@ export default function LoginPage() {
 
     try {
       if (tab === "register") {
-        await register(form.name, form.email, form.password);
-        addToast("Registration successful! Please login.", "success");
+        const data = await register(form.name, form.email, form.password);
+        addToast(data.message || "Registration successful! Please verify your email.", "success");
         setTab("login");
         setForm({ name: "", email: form.email, password: "" });
         navigate("/login", { replace: true });
@@ -116,6 +116,11 @@ export default function LoginPage() {
             >
               {loading ? "Please wait..." : tab === "login" ? t("auth.loginBtn") : t("auth.registerBtn")}
             </button>
+            {tab === "login" && (
+              <div style={{ textAlign: "center", marginTop: "1rem" }}>
+                <Link to="/forgot-password" className={styles.switchBtn}>Forgot Password?</Link>
+              </div>
+            )}
           </form>
 
           <div className={styles.hint}>

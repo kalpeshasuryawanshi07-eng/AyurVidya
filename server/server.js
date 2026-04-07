@@ -7,6 +7,7 @@ const connectDB = require('./config/database');
 const errorHandler = require('./middleware/errorHandler');
 const rateLimiter = require('./middleware/rateLimiter');
 const sanitizeRequest = require('./middleware/sanitize');
+const { startReminderJob } = require('./jobs/ReminderJob');
 
 // Initialize Express app
 const app = express();
@@ -93,8 +94,11 @@ const startServer = async () => {
     // Start server
     const PORT = config.port;
     app.listen(PORT, () => {
-      console.log(`✓ Server running in ${config.nodeEnv} mode on port ${PORT}`);
       console.log(`✓ CORS enabled for all Vercel deployments and configured origins`);
+
+      // Initialize Cron Jobs
+      startReminderJob();
+      console.log(`✓ Daily learning reminders scheduled at 8:00 AM daily`);
     });
   } catch (error) {
     console.error('✗ Failed to start server:', error.message);
