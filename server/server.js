@@ -19,8 +19,27 @@ const startServer = async () => {
 
     // Middleware
     app.use(helmet());
+    
+    // CORS configuration - allow multiple origins
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'https://ayur-vidya-3wbybo5v1-kalpeshasuryawanshi07-7026s-projects.vercel.app',
+      'https://ayur-vidya-8iw0yfvlo-kalpeshasuryawanshi07-7026s-projects.vercel.app',
+      config.corsOrigin // Also allow environment variable
+    ].filter(Boolean);
+
     app.use(cors({
-      origin: config.corsOrigin,
+      origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        
+        // Check if origin is in allowed list or matches Vercel pattern
+        if (allowedOrigins.includes(origin) || origin.includes('vercel.app')) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
       credentials: true,
     }));
     app.use(express.json());
@@ -75,7 +94,7 @@ const startServer = async () => {
     const PORT = config.port;
     app.listen(PORT, () => {
       console.log(`✓ Server running in ${config.nodeEnv} mode on port ${PORT}`);
-      console.log(`✓ CORS enabled for: ${config.corsOrigin}`);
+      console.log(`✓ CORS enabled for all Vercel deployments and configured origins`);
     });
   } catch (error) {
     console.error('✗ Failed to start server:', error.message);
