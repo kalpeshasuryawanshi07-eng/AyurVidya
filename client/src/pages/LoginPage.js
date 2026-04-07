@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 import { useLanguage } from "../context/LanguageContext";
-import { login, register } from "../services/api";
+import { login, register, verifyEmail, resendOtp } from "../services/api";
 import Navbar from "../components/layout/Navbar";
 import styles from "../styles/LoginPage.module.css";
 
@@ -15,6 +15,9 @@ export default function LoginPage() {
   const { addToast } = useToast();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const [verifyingEmail, setVerifyingEmail] = useState(null);
+  const [otp, setOtp] = useState("");
+  const [resending, setResending] = useState(false);
 
   const handleChange = (e) => setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
@@ -25,10 +28,8 @@ export default function LoginPage() {
     try {
       if (tab === "register") {
         const data = await register(form.name, form.email, form.password);
-        addToast(data.message || "Registration successful! Please verify your email.", "success");
-        setTab("login");
-        setForm({ name: "", email: form.email, password: "" });
-        navigate("/login", { replace: true });
+        addToast(data.message || "OTP sent to your email.", "success");
+        setVerifyingEmail(form.email);
       } else {
         const data = await login(form.email, form.password);
         loginUser(data.token, data.user);
@@ -44,6 +45,34 @@ export default function LoginPage() {
       addToast(message, "error");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await verifyEmail(otp);
+      addToast("Email verified! You can now login.", "success");
+      setVerifyingEmail(null);
+      setTab("login");
+      setOtp("");
+    } catch (err) {
+      addToast(err.response?.data?.message || "Invalid or expired OTP", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setResending(true);
+    try {
+      await resendOtp(verifyingEmail);
+      addToast("New OTP sent to your email.", "success");
+    } catch (err) {
+      addToast("Failed to resend OTP.", "error");
+    } finally {
+      setResending(false);
     }
   };
 
@@ -68,60 +97,99 @@ export default function LoginPage() {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className={styles.form}>
-            {tab === "register" && (
+          {verifyingEmail ? (
+            <form onSubmit={handleVerifyOtp} className={styles.form}>
+              <p className={styles.otpHint}>
+                We've sent a 6-digit OTP to <strong>{verifyingEmail}</strong>.<br/>
+                Please enter it below to verify your account.
+              </p>
               <div className={styles.field}>
-                <label>{t("auth.name")}</label>
+                <label>Enter OTP</label>
                 <input
-                  name="name"
                   type="text"
-                  value={form.name}
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  placeholder="123456"
+                  maxLength={6}
+                  required
+                  style={{ textAlign: "center", fontSize: "1.5rem", letterSpacing: "5px" }}
+                />
+              </div>
+              <button type="submit" className="btn btn-primary w-full" disabled={loading}>
+                {loading ? "Verifying..." : "Verify OTP"}
+              </button>
+              <div style={{ textAlign: "center", marginTop: "1rem" }}>
+                <button 
+                  type="button" 
+                  className={styles.switchBtn} 
+                  onClick={handleResendOtp}
+                  disabled={resending}
+                >
+                  {resending ? "Resending..." : "Resend OTP"}
+                </button>
+              </div>
+              <div style={{ textAlign: "center", marginTop: "0.5rem" }}>
+                <button type="button" className={styles.switchBtn} onClick={() => setVerifyingEmail(null)}>
+                  Back to Registration
+                </button>
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={handleSubmit} className={styles.form}>
+              {tab === "register" && (
+                <div className={styles.field}>
+                  <label>{t("auth.name")}</label>
+                  <input
+                    name="name"
+                    type="text"
+                    value={form.name}
+                    onChange={handleChange}
+                    placeholder="Your full name"
+                    required
+                  />
+                </div>
+              )}
+
+              <div className={styles.field}>
+                <label>{t("auth.email")}</label>
+                <input
+                  name="email"
+                  type="email"
+                  value={form.email}
                   onChange={handleChange}
-                  placeholder="Your full name"
+                  placeholder="your@email.com"
                   required
                 />
               </div>
-            )}
 
-            <div className={styles.field}>
-              <label>{t("auth.email")}</label>
-              <input
-                name="email"
-                type="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder="your@email.com"
-                required
-              />
-            </div>
-
-            <div className={styles.field}>
-              <label>{t("auth.password")}</label>
-              <input
-                name="password"
-                type="password"
-                value={form.password}
-                onChange={handleChange}
-                placeholder="********"
-                required
-                minLength={6}
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="btn btn-primary w-full"
-              disabled={loading}
-              style={{ marginTop: "0.5rem" }}
-            >
-              {loading ? "Please wait..." : tab === "login" ? t("auth.loginBtn") : t("auth.registerBtn")}
-            </button>
-            {tab === "login" && (
-              <div style={{ textAlign: "center", marginTop: "1rem" }}>
-                <Link to="/forgot-password" className={styles.switchBtn}>Forgot Password?</Link>
+              <div className={styles.field}>
+                <label>{t("auth.password")}</label>
+                <input
+                  name="password"
+                  type="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  placeholder="********"
+                  required
+                  minLength={6}
+                />
               </div>
-            )}
-          </form>
+
+              <button
+                type="submit"
+                className="btn btn-primary w-full"
+                disabled={loading}
+                style={{ marginTop: "0.5rem" }}
+              >
+                {loading ? "Please wait..." : tab === "login" ? t("auth.loginBtn") : t("auth.registerBtn")}
+              </button>
+              {tab === "login" && (
+                <div style={{ textAlign: "center", marginTop: "1rem" }}>
+                  <Link to="/forgot-password" className={styles.switchBtn}>Forgot Password?</Link>
+                </div>
+              )}
+            </form>
+          )}
 
           <div className={styles.hint}>
             {tab === "login" ? (

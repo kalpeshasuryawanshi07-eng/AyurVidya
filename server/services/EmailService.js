@@ -69,14 +69,16 @@ class EmailService {
     `;
   }
 
-  async sendVerificationEmail(name, email, token) {
-    const link = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
+  async sendVerificationEmail(name, email, otp) {
     const body = `
       <p>Namaste, <strong>${name}</strong>!</p>
-      <p>Welcome to AyurvedaLearn! To start your educational journey, we need to verify your email address.</p>
-      <p>This verification link is valid for 24 hours.</p>
+      <p>Welcome to AyurvedaLearn! To complete your registration, please verify your email address using the One-Time Password (OTP) below:</p>
+      <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; border: 1px solid #166534; font-size: 24px; font-weight: 700; text-align: center; color: #166534; letter-spacing: 5px; margin: 20px 0;">
+        ${otp}
+      </div>
+      <p>This OTP is valid for <strong>1 hour</strong>. If you didn't create an account, please ignore this email.</p>
     `;
-    return this.sendEmail(email, 'Verify your email - AyurvedaLearn', this.getTemplate('Verify Your Email', body, 'Verify Email Address', link));
+    return this.sendEmail(email, 'Verify your email - AyurvedaLearn', this.getTemplate('Email Verification OTP', body));
   }
 
   async sendForgotPasswordEmail(name, email, token) {

@@ -55,6 +55,7 @@ export const login = (email, password) => request(api.post("/auth/login", { emai
 export const getMe = () => request(api.get("/auth/me"));
 export const updateProfile = (data) => request(api.patch("/auth/profile", data));
 export const verifyEmail = (token) => request(api.post("/auth/verify-email", { token }));
+export const resendOtp = (email) => request(api.post("/auth/resend-otp", { email }));
 export const forgotPassword = (email) => request(api.post("/auth/forgot-password", { email }));
 export const resetPassword = (token, password) => request(api.post("/auth/reset-password", { token, password }));
 

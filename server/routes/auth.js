@@ -286,6 +286,31 @@ router.post('/verify-email', async (req, res) => {
 });
 
 /**
+ * POST /api/auth/resend-otp
+ * Resend verification OTP
+ */
+router.post('/resend-otp', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ status: 'error', message: 'Email is required' });
+    }
+
+    await AuthService.resendVerificationOtp(email);
+
+    res.status(200).json({
+      status: 'success',
+      message: 'A new OTP has been sent to your email.'
+    });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      status: 'error',
+      message: error.message || 'Failed to resend OTP'
+    });
+  }
+});
+
+/**
  * POST /api/auth/forgot-password
  * Request password reset email
  */

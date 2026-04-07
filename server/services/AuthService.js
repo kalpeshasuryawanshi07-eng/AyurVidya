@@ -22,9 +22,9 @@ class AuthService {
       throw error;
     }
 
-    // Generate verification token
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-    const verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+    // Generate 6-digit OTP
+    const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+    const verificationTokenExpires = Date.now() + 1 * 60 * 60 * 1000; // 1 hour
 
     // Create new user (password will be hashed by pre-save hook)
     const user = new User({
@@ -47,7 +47,7 @@ class AuthService {
 
     return {
       user: user.toJSON(),
-      message: 'Account created. Please check your email to verify.'
+      message: 'OTP sent to your email. Please verify to complete registration.'
     };
   }
 
@@ -182,6 +182,27 @@ class AuthService {
     }
 
     return user.toJSON();
+  }
+
+  /**
+   * Resend verification OTP
+   * @param {string} email - User email
+   */
+  async resendVerificationOtp(email) {
+    const user = await User.findOne({ email: email.toLowerCase(), isVerified: false });
+    if (!user) {
+      const error = new Error('User not found or already verified');
+      error.name = 'ValidationError';
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+    user.verificationToken = verificationToken;
+    user.verificationTokenExpires = Date.now() + 1 * 60 * 60 * 1000;
+    await user.save();
+
+    await EmailService.sendVerificationEmail(user.name, user.email, verificationToken);
   }
 
   /**
