@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getMyCertificates } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -15,16 +15,7 @@ export default function CertificatesPage() {
   const { addToast } = useToast();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
-
-    fetchCertificates();
-  }, [user, navigate]);
-
-  const fetchCertificates = async () => {
+  const fetchCertificates = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getMyCertificates();
@@ -34,7 +25,16 @@ export default function CertificatesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [addToast]);
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    fetchCertificates();
+  }, [user, navigate, fetchCertificates]);
 
   const downloadCertificate = (cert) => {
     // Create a printable certificate view
