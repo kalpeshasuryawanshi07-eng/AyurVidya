@@ -10,7 +10,7 @@ import styles from "../styles/HomePage.module.css";
 const stats = (t) => [
   { value: "10", label: "Subjects", labelMr: "विषय" },
   { value: "221", label: "Topics", labelMr: "विषय" },
-  { value: "75+", label: "Herbs", labelMr: "औषधी" },
+  { value: "25+", label: "Herbs", labelMr: "औषधी" },
   { value: "5000+", label: "Students", labelMr: "विद्यार्थी" },
 ];
 

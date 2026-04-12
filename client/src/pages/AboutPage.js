@@ -26,7 +26,7 @@ export default function AboutPage() {
             {[
               { icon: "📚", title: "10 Subjects", desc: "Complete BAMS curriculum" },
               { icon: "📖", title: "250+ Topics", desc: "Detailed topic pages" },
-              { icon: "🌿", title: "75+ Herbs", desc: "Complete herb encyclopedia" },
+              { icon: "🌿", title: "25+ Herbs", desc: "Complete herb encyclopedia" },
               { icon: "🧠", title: "Quizzes", desc: "MCQs after every topic" },
               { icon: "🃏", title: "Flashcards", desc: "Spaced repetition learning" },
               { icon: "🗣️", title: "Bilingual", desc: "English + Marathi" },
