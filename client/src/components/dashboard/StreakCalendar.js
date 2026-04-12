@@ -74,7 +74,7 @@ export default function StreakCalendar() {
 
   const monthlyGroups = useMemo(() => buildMonthlyGroups(streak.activityDates), [streak.activityDates]);
 
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
 
 
   return (

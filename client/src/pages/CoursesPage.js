@@ -94,7 +94,7 @@ export default function CoursesPage() {
           {!loading && !error && (
             <div className={styles.coursesGrid}>
               {courses.map((course) => {
-                const lessonCount = Array.isArray(course.lessons) ? course.lessons.length : 0;
+
                 const durationLabel = course.duration ? `${course.duration} hrs` : "Self-paced";
                 const isFree = !course.isPaid || (course.price || 0) === 0;
                 return (
