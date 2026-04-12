@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useLanguage } from "../context/LanguageContext";
 import { useToast } from "../context/ToastContext";
 import {
   getCourseBySlug,
@@ -29,6 +30,7 @@ export default function CourseDetailPage() {
   const { courseSlug } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const { addToast } = useToast();
 
   const [course, setCourse] = useState(null);
@@ -49,6 +51,8 @@ export default function CourseDetailPage() {
         const data = await getCourseBySlug(courseSlug);
         console.log('Course data received:', data);
         console.log('Course object:', data.course);
+        console.log('Modules:', data.course?.modules);
+        console.log('Modules length:', data.course?.modules?.length);
         console.log('Lessons:', data.course?.lessons);
         console.log('Lessons length:', data.course?.lessons?.length);
         setCourse(data.course || null);
@@ -106,6 +110,28 @@ export default function CourseDetailPage() {
     if (!course || !course.isPaid || (course.price || 0) === 0) return [];
     const methods = Array.isArray(course.paymentMethods) ? course.paymentMethods : [];
     return methods.length > 0 ? methods : ["upi", "card", "netbanking"];
+  }, [course]);
+
+  const modules = useMemo(() => {
+    if (!course) return [];
+    if (Array.isArray(course.modules) && course.modules.length > 0) {
+      return course.modules;
+    }
+
+    // Legacy mapping: group flat lessons into modules of 5
+    const lessons = Array.isArray(course.lessons) ? course.lessons : [];
+    const legacyModules = [];
+    for (let i = 0; i < lessons.length; i += 5) {
+      legacyModules.push({
+        title: `Module ${Math.floor(i / 5) + 1}`,
+        topics: lessons.slice(i, i + 5).map((l) => ({
+          title: l.title,
+          description: l.duration ? `${l.duration} min` : (l.content || "").substring(0, 100) + "...",
+          lessonId: l.lessonId,
+        })),
+      });
+    }
+    return legacyModules;
   }, [course]);
 
   useEffect(() => {
@@ -219,19 +245,6 @@ export default function CourseDetailPage() {
     );
   }
 
-  const lessons = Array.isArray(course.lessons) ? course.lessons : [];
-  console.log('Rendering CourseDetailPage');
-  console.log('Course:', course);
-  console.log('Lessons array:', lessons);
-  console.log('Lessons length:', lessons.length);
-  const modules = [];
-  for (let i = 0; i < lessons.length; i += 5) {
-    modules.push({
-      title: `Module ${Math.floor(i / 5) + 1}`,
-      lessons: lessons.slice(i, i + 5),
-    });
-  }
-
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <Navbar />
@@ -254,7 +267,12 @@ export default function CourseDetailPage() {
                 <h1>{course.title}</h1>
                 <p>{course.description}</p>
                 <div className={styles.headerMeta}>
-                  <span>Level: {course.level || "beginner"}</span>
+                  <span>{t("courses.level")}: {
+                    course.level === '1st Year' || course.level === 'beginner' ? t("topic.beginner") :
+                    course.level === '2nd Year' || course.level === 'intermediate' ? t("topic.intermediate") :
+                    course.level === '3rd Year' || course.level === 'advanced' ? t("topic.advanced") :
+                    course.level || t("topic.beginner")
+                  }</span>
                   <span>Duration: {course.duration ? `${course.duration} hrs` : "Self-paced"}</span>
                   <span>Students: {(course.enrollmentCount || 0).toLocaleString()}</span>
                   <span>Rating: {course.rating || 0}</span>
@@ -364,12 +382,9 @@ export default function CourseDetailPage() {
         <div className={styles.curriculumSection}>
           <div className="container">
             <h2 className="section-heading">Course Curriculum</h2>
-          {lessons.length === 0 && (
+          {modules.length === 0 && (
             <div style={{ padding: "2rem", textAlign: "center", background: "var(--color-surface-alt)", borderRadius: "var(--radius-md)", marginBottom: "1rem" }}>
               <p className="text-muted">Curriculum will be published soon.</p>
-              <p style={{ fontSize: "0.875rem", color: "var(--color-text-light)", marginTop: "0.5rem" }}>
-                Check browser console for debugging info
-              </p>
             </div>
           )}
           {modules.map((module, index) => (
@@ -379,14 +394,23 @@ export default function CourseDetailPage() {
                 onClick={() => setOpenModule(openModule === index ? -1 : index)}
               >
                 <span>{module.title}</span>
-                <span>{openModule === index ? "v" : ">"} {module.lessons.length} lessons</span>
+                <span>
+                  {openModule === index ? "v" : ">"} {module.topics?.length || 0} topics
+                </span>
               </button>
               {openModule === index && (
                 <div style={{ borderTop: "1px solid var(--color-border)" }}>
-                  {module.lessons.map((lesson) => (
-                    <div key={lesson.lessonId} className={styles.lessonRow}>
-                      <span style={{ flex: 1 }}>{lesson.title}</span>
-                      <span className="text-muted">{lesson.duration || 0} min</span>
+                  {(module.topics || []).map((topic, tIdx) => (
+                    <div key={tIdx} className={styles.lessonRow} style={{ paddingLeft: "2.5rem" }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 600 }}>{topic.title}</div>
+                        {topic.description && (
+                          <div style={{ fontSize: "0.8rem", color: "var(--color-text-light)" }}>{topic.description}</div>
+                        )}
+                      </div>
+                      <span className="text-muted" style={{ fontSize: "0.8rem" }}>
+                        {topic.subtopics?.length > 0 ? `${topic.subtopics.length} sections` : ""}
+                      </span>
                     </div>
                   ))}
                 </div>

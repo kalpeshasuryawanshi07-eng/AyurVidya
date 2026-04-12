@@ -201,11 +201,7 @@ class AdminService {
       delete updates.enrollmentCount;
     }
 
-    const course = await Course.findByIdAndUpdate(
-      courseId,
-      updates,
-      { new: true, runValidators: true }
-    );
+    const course = await Course.findById(courseId);
 
     if (!course) {
       const error = new Error('Course not found');
@@ -214,6 +210,12 @@ class AdminService {
       throw error;
     }
 
+    // Apply updates
+    Object.keys(updates).forEach(key => {
+      course[key] = updates[key];
+    });
+
+    await course.save();
     return course.toObject();
   }
 

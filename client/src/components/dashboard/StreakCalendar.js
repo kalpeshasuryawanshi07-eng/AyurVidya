@@ -2,33 +2,54 @@ import { useEffect, useMemo, useState } from "react";
 import { getStreak } from "../../services/api";
 import styles from "../../styles/Dashboard.module.css";
 
-function buildCalendarCells(currentStreak) {
-  const cells = [];
+function buildMonthlyGroups(activityDatesArr = []) {
+  const months = [];
   const today = new Date();
-  const streakDays = Math.max(0, Number(currentStreak) || 0);
-
-  for (let i = 364; i >= 0; i -= 1) {
-    const date = new Date(today);
-    date.setDate(date.getDate() - i);
-    const daysFromToday = i;
-
-    let level = 0;
-    if (daysFromToday < streakDays) {
-      level = 3;
-      if (daysFromToday < 7) level = 4;
+  
+  // Normalize activity dates
+  const activitySet = new Set(
+    activityDatesArr.map(d => new Date(d).toISOString().split('T')[0])
+  );
+  
+  // Create 12 months back from today
+  for (let m = 11; m >= 0; m--) {
+    const targetMonth = new Date(today.getFullYear(), today.getMonth() - m, 1);
+    const monthName = targetMonth.toLocaleString('default', { month: 'short' });
+    const year = targetMonth.getFullYear();
+    const monthNum = targetMonth.getMonth();
+    
+    // Days in this month
+    const daysInMonth = new Date(year, monthNum + 1, 0).getDate();
+    const days = [];
+    
+    for (let d = 1; d <= daysInMonth; d++) {
+      const date = new Date(year, monthNum, d);
+      const dateStr = date.toISOString().split('T')[0];
+      
+      let level = 0;
+      if (activitySet.has(dateStr)) {
+        level = 3;
+        // Check if it's very recent (last 7 days total)
+        const diffDays = Math.floor((today - date) / (1000 * 60 * 60 * 24));
+        if (diffDays < 7) level = 4;
+      }
+      
+      days.push({ date: dateStr, level, dayOfWeek: date.getDay() });
     }
-
-    cells.push({
-      date: date.toISOString().split("T")[0],
-      level,
-    });
+    
+    months.push({ name: monthName, days });
   }
 
-  return cells;
+  return months;
 }
 
 export default function StreakCalendar() {
-  const [streak, setStreak] = useState({ currentStreak: 0, longestStreak: 0, lastActivity: null });
+  const [streak, setStreak] = useState({ 
+    currentStreak: 0, 
+    longestStreak: 0, 
+    lastActivity: null,
+    activityDates: [] 
+  });
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -36,7 +57,13 @@ export default function StreakCalendar() {
       try {
         setError("");
         const data = await getStreak();
-        setStreak(data.streak || { currentStreak: 0, longestStreak: 0, lastActivity: null });
+        const streakData = data.streak || data;
+        setStreak({
+          currentStreak: streakData.currentStreak || 0,
+          longestStreak: streakData.longestStreak || 0,
+          lastActivity: streakData.lastActivity || null,
+          activityDates: streakData.activityDates || []
+        });
       } catch (err) {
         setError(err.response?.data?.message || "Failed to load streak.");
       }
@@ -45,8 +72,10 @@ export default function StreakCalendar() {
     fetchStreak();
   }, []);
 
-  const cells = useMemo(() => buildCalendarCells(streak.currentStreak), [streak.currentStreak]);
+  const monthlyGroups = useMemo(() => buildMonthlyGroups(streak.activityDates), [streak.activityDates]);
+
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
 
   return (
     <div className={styles.calendarWrap}>
@@ -64,21 +93,31 @@ export default function StreakCalendar() {
           {error}
         </div>
       )}
-      <div className={styles.calendarMonths}>
-        {months.map((month) => (
-          <span key={month}>{month}</span>
+      
+      <div className="streak-container">
+        {monthlyGroups.map((group) => (
+          <div key={group.name} className="month-island">
+            <div className="month-grid">
+               {/* Padding for start of month */}
+               {Array.from({ length: group.days[0].dayOfWeek }).map((_, i) => (
+                 <div key={`pad-${i}`} className="streak-cell-hidden" />
+               ))}
+               
+               {group.days.map((day, idx) => (
+                 <div
+                   key={idx}
+                   className={`streak-cell${day.level ? ` level-${day.level}` : ""}`}
+                   title={`${day.date}: ${day.level ? "Studied" : "No activity"}`}
+                 />
+               ))}
+            </div>
+            <div className="month-label">{group.name}</div>
+          </div>
         ))}
       </div>
-      <div className="streak-grid">
-        {cells.map((cell, index) => (
-          <div
-            key={index}
-            className={`streak-cell${cell.level ? ` level-${cell.level}` : ""}`}
-            title={`${cell.date}: ${cell.level ? "Studied" : "No activity"}`}
-          />
-        ))}
-      </div>
+
       <div className={styles.calendarLegend}>
+
         <span>Less</span>
         <div className="streak-cell" />
         <div className="streak-cell level-1" />

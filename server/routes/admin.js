@@ -300,8 +300,8 @@ router.post(
       .withMessage('Description is required'),
     body('level')
       .optional()
-      .isIn(['beginner', 'intermediate', 'advanced'])
-      .withMessage('Level must be beginner, intermediate, or advanced'),
+      .isIn(['beginner', 'intermediate', 'advanced', '1st Year', '2nd Year', '3rd Year'])
+      .withMessage('Level must be one of: beginner, intermediate, advanced, 1st Year, 2nd Year, 3rd Year'),
     body('duration')
       .optional()
       .isInt({ min: 0 })
@@ -405,8 +405,8 @@ router.put(
       .withMessage('Description cannot be empty'),
     body('level')
       .optional()
-      .isIn(['beginner', 'intermediate', 'advanced'])
-      .withMessage('Level must be beginner, intermediate, or advanced'),
+      .isIn(['beginner', 'intermediate', 'advanced', '1st Year', '2nd Year', '3rd Year'])
+      .withMessage('Level must be one of: beginner, intermediate, advanced, 1st Year, 2nd Year, 3rd Year'),
     body('duration')
       .optional()
       .isInt({ min: 0 })

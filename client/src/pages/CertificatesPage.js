@@ -124,7 +124,7 @@ export default function CertificatesPage() {
         <div class="certificate">
           <div class="header">
             <div class="logo">🌿</div>
-            <div class="title">AyurvedaLearn</div>
+            <div class="title">AyurVidya</div>
             <div class="subtitle">Certificate of Completion</div>
           </div>
           <div class="content">
@@ -179,7 +179,7 @@ ${cert.score ? `Score: ${cert.score}%` : ''}
 Issue Date: ${new Date(cert.issuedAt).toLocaleDateString()}
 Completion Date: ${new Date(cert.completionDate).toLocaleDateString()}
 
-This certificate is authentic and issued by AyurvedaLearn.`;
+This certificate is authentic and issued by AyurVidya.`;
     
     alert(verificationInfo);
   };

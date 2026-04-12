@@ -9,8 +9,10 @@ import {
   updateUser,
   deleteUser,
   createCourse,
+  updateCourse,
   deleteCourse,
 } from "../services/api";
+
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import Loader from "../components/common/Loader";
@@ -44,6 +46,9 @@ export default function AdminPage() {
     isPaid: false,
     paymentMethods: [],
   });
+  const [courseJson, setCourseJson] = useState("");
+  const [editingCourseId, setEditingCourseId] = useState(null);
+
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) navigate("/");
@@ -95,33 +100,104 @@ export default function AdminPage() {
     }
   };
 
-  const handleCreateCourse = async (e) => {
+  const handleCourseSubmit = async (e) => {
     e.preventDefault();
     try {
+      let modules = [];
+      if (courseJson.trim()) {
+        try {
+          const parsed = JSON.parse(courseJson);
+          if (parsed.course_title && !newCourse.title) {
+            newCourse.title = parsed.course_title;
+          }
+          if (parsed.description && !newCourse.description) {
+            newCourse.description = parsed.description;
+          }
+
+          if (Array.isArray(parsed.modules)) {
+            modules = parsed.modules.map(mod => ({
+              title: mod.module_name || mod.title || "Untitled Module",
+              topics: Array.isArray(mod.topics) ? mod.topics.map(topic => ({
+                title: topic.topic_name || topic.title || "Untitled Topic",
+                description: topic.description || "",
+                definition: topic.definition || "",
+                key_points: topic.key_points || [],
+                summary: topic.summary || "",
+                subtopics: Array.isArray(topic.subtopics) ? topic.subtopics.map(st => ({
+                  title: st.title || "Untitled Subtopic",
+                  content: st.content || "",
+                  examples: st.examples || [],
+                  applications: st.applications || [],
+                  important_notes: st.important_notes || []
+                })) : []
+              })) : []
+            }));
+          } else if (Array.isArray(parsed)) {
+            // Handle if they just pasted the modules array directly
+            modules = parsed;
+          }
+        } catch (jsonErr) {
+          addToast("Invalid JSON format for course content.", "error");
+          return;
+        }
+      }
+
       const payload = {
         ...newCourse,
         duration: Number(newCourse.duration),
         price: Number(newCourse.price),
         isPaid: newCourse.isPaid && Number(newCourse.price) > 0,
         paymentMethods: newCourse.isPaid && Number(newCourse.price) > 0 ? newCourse.paymentMethods : [],
+        modules: modules
       };
-      const result = await createCourse(payload);
-      addToast("Course created.", "success");
-      setCourses((prev) => [result.course, ...prev]);
-      setNewCourse({
-        slug: "",
-        title: "",
-        description: "",
-        level: "beginner",
-        duration: 1,
-        price: 0,
-        isPaid: false,
-        paymentMethods: [],
-      });
+
+      if (editingCourseId) {
+        const result = await updateCourse(editingCourseId, payload);
+        addToast("Course updated successfully.", "success");
+        setCourses((prev) => prev.map(c => c._id === editingCourseId ? result.course : c));
+      } else {
+        const result = await createCourse(payload);
+        addToast("Course created successfully.", "success");
+        setCourses((prev) => [result.course, ...prev]);
+      }
+
+      resetForm();
     } catch (err) {
-      addToast(err.response?.data?.message || "Failed to create course.", "error");
+      addToast(err.response?.data?.message || `Failed to ${editingCourseId ? 'update' : 'create'} course.`, "error");
     }
   };
+
+  const resetForm = () => {
+    setEditingCourseId(null);
+    setNewCourse({
+      slug: "",
+      title: "",
+      description: "",
+      level: "beginner",
+      duration: 1,
+      price: 0,
+      isPaid: false,
+      paymentMethods: [],
+    });
+    setCourseJson("");
+  };
+
+  const handleEditCourse = (course) => {
+    setEditingCourseId(course._id);
+    setNewCourse({
+      slug: course.slug || "",
+      title: course.title || "",
+      description: course.description || "",
+      level: course.level || "beginner",
+      duration: course.duration || 1,
+      price: course.price || 0,
+      isPaid: course.isPaid || false,
+      paymentMethods: course.paymentMethods || [],
+    });
+    setCourseJson(course.modules ? JSON.stringify(course.modules, null, 2) : "");
+    window.scrollTo({ top: document.getElementById('course-form').offsetTop - 100, behavior: 'smooth' });
+  };
+
 
   const handleDeleteCourse = async (id) => {
     try {
@@ -131,6 +207,36 @@ export default function AdminPage() {
     } catch (err) {
       addToast(err.response?.data?.message || "Failed to delete course.", "error");
     }
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const content = event.target.result;
+        // Validate JSON
+        const parsed = JSON.parse(content);
+        setCourseJson(JSON.stringify(parsed, null, 2));
+        addToast("JSON file loaded successfully.", "info");
+
+        // Try to auto-populate title/description if they are empty
+        if (parsed.course_title) {
+          setNewCourse(prev => ({ ...prev, title: parsed.course_title }));
+        }
+        if (parsed.description) {
+          setNewCourse(prev => ({ ...prev, description: parsed.description }));
+        }
+        if (parsed.course_title && !newCourse.slug) {
+          const generatedSlug = parsed.course_title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+          setNewCourse(prev => ({ ...prev, slug: generatedSlug }));
+        }
+      } catch (err) {
+        addToast("Failed to parse JSON file.", "error");
+      }
+    };
+    reader.readAsText(file);
   };
 
   return (
@@ -203,39 +309,68 @@ export default function AdminPage() {
             </table>
           </div>
 
-          <h2 className="section-heading">Course Management</h2>
-          <form className="card" style={{ marginBottom: "1rem", display: "grid", gap: "0.75rem" }} onSubmit={handleCreateCourse}>
-            <input placeholder="slug" value={newCourse.slug} onChange={(e) => setNewCourse((prev) => ({ ...prev, slug: e.target.value }))} required />
-            <input placeholder="title" value={newCourse.title} onChange={(e) => setNewCourse((prev) => ({ ...prev, title: e.target.value }))} required />
-            <textarea placeholder="description" value={newCourse.description} onChange={(e) => setNewCourse((prev) => ({ ...prev, description: e.target.value }))} required />
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.5rem" }}>
-              <select value={newCourse.level} onChange={(e) => setNewCourse((prev) => ({ ...prev, level: e.target.value }))}>
-                <option value="beginner">beginner</option>
-                <option value="intermediate">intermediate</option>
-                <option value="advanced">advanced</option>
-              </select>
-              <input type="number" min="1" placeholder="duration (hrs)" value={newCourse.duration} onChange={(e) => setNewCourse((prev) => ({ ...prev, duration: e.target.value }))} />
-              <input
-                type="number"
-                min="0"
-                placeholder="price"
-                value={newCourse.price}
-                onChange={(e) =>
-                  setNewCourse((prev) => {
-                    const paidCourse = Number(e.target.value) > 0;
-                    return {
-                      ...prev,
-                      price: e.target.value,
-                      isPaid: paidCourse,
-                      paymentMethods: paidCourse
-                        ? (prev.paymentMethods.length > 0 ? prev.paymentMethods : ["upi", "card", "netbanking"])
-                        : [],
-                    };
-                  })
-                }
-              />
+          <h2 className="section-heading" id="course-form">
+            {editingCourseId ? "Edit Course" : "Course Management"}
+          </h2>
+          <form className="card" style={{ marginBottom: "1rem", display: "grid", gap: "1rem" }} onSubmit={handleCourseSubmit}>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                <label style={{ fontSize: "0.85rem", fontWeight: 600 }}>Course Slug</label>
+                <input placeholder="e.g. ayurveda-fundamentals" value={newCourse.slug} onChange={(e) => setNewCourse((prev) => ({ ...prev, slug: e.target.value }))} required />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                <label style={{ fontSize: "0.85rem", fontWeight: 600 }}>Course Title</label>
+                <input placeholder="e.g. Ayurveda Fundamentals" value={newCourse.title} onChange={(e) => setNewCourse((prev) => ({ ...prev, title: e.target.value }))} required />
+              </div>
             </div>
-            <label>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+              <label style={{ fontSize: "0.85rem", fontWeight: 600 }}>Description</label>
+              <textarea placeholder="Briefly describe the course content..." value={newCourse.description} onChange={(e) => setNewCourse((prev) => ({ ...prev, description: e.target.value }))} required />
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1rem" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                <label style={{ fontSize: "0.85rem", fontWeight: 600 }}>Level</label>
+                <select value={newCourse.level} onChange={(e) => setNewCourse((prev) => ({ ...prev, level: e.target.value }))}>
+                  <option value="beginner">beginner</option>
+                  <option value="intermediate">intermediate</option>
+                  <option value="advanced">advanced</option>
+                  <option value="1st Year">1st Year</option>
+                  <option value="2nd Year">2nd Year</option>
+                  <option value="3rd Year">3rd Year</option>
+                </select>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                <label style={{ fontSize: "0.85rem", fontWeight: 600 }}>Duration (Hrs)</label>
+                <input type="number" min="1" placeholder="e.g. 10" value={newCourse.duration} onChange={(e) => setNewCourse((prev) => ({ ...prev, duration: e.target.value }))} />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                <label style={{ fontSize: "0.85rem", fontWeight: 600 }}>Price (INR)</label>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="0 for Free"
+                  value={newCourse.price}
+                  onChange={(e) =>
+                    setNewCourse((prev) => {
+                      const paidCourse = Number(e.target.value) > 0;
+                      return {
+                        ...prev,
+                        price: e.target.value,
+                        isPaid: paidCourse,
+                        paymentMethods: paidCourse
+                          ? (prev.paymentMethods.length > 0 ? prev.paymentMethods : ["upi", "card", "netbanking"])
+                          : [],
+                      };
+                    })
+                  }
+                />
+              </div>
+            </div>
+
+            <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.9rem", cursor: "pointer" }}>
               <input
                 type="checkbox"
                 checked={newCourse.isPaid}
@@ -249,7 +384,7 @@ export default function AdminPage() {
                   }))
                 }
               />{" "}
-              Paid course
+              This is a paid course
             </label>
             {newCourse.isPaid && Number(newCourse.price) > 0 && (
               <div style={{ border: "1px solid var(--color-border)", borderRadius: "var(--radius-md)", padding: "0.8rem", background: "var(--color-surface-alt)" }}>
@@ -280,8 +415,38 @@ export default function AdminPage() {
                 </div>
               </div>
             )}
-            <button className="btn btn-primary" type="submit">Create Course</button>
+            
+            <div style={{ marginTop: "0.5rem" }}>
+              <div style={{ fontSize: "0.85rem", fontWeight: 600, marginBottom: "0.4rem" }}>Course Content (JSON)</div>
+              <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem" }}>
+                <input 
+                  type="file" 
+                  accept=".json" 
+                  onChange={handleFileUpload} 
+                  style={{ fontSize: "0.8rem", flex: 1 }}
+                />
+              </div>
+              <textarea 
+                placeholder='Paste course JSON here... { "course_title": "...", "modules": [...] }' 
+                value={courseJson} 
+                onChange={(e) => setCourseJson(e.target.value)} 
+                rows="8"
+                style={{ fontSize: "0.85rem", fontFamily: "monospace" }}
+              />
+            </div>
+
+            <div style={{ display: "flex", gap: "1rem", marginTop: "0.5rem" }}>
+              <button className="btn btn-primary" type="submit" style={{ flex: 1 }}>
+                {editingCourseId ? "Update Course" : "Create Course"}
+              </button>
+              {editingCourseId && (
+                <button className="btn btn-outline" type="button" onClick={resetForm}>
+                  Cancel Edit
+                </button>
+              )}
+            </div>
           </form>
+
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "1rem" }}>
             {courses.map((record) => (
@@ -296,10 +461,16 @@ export default function AdminPage() {
                     )).join(", ")}
                   </div>
                 )}
-                <button className="btn btn-outline btn-sm" onClick={() => handleDeleteCourse(record._id)}>
-                  Delete Course
-                </button>
+                 <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <button className="btn btn-primary btn-sm" style={{ flex: 1 }} onClick={() => handleEditCourse(record)}>
+                    Edit Course
+                  </button>
+                  <button className="btn btn-outline btn-sm" style={{ flex: 1 }} onClick={() => handleDeleteCourse(record._id)}>
+                    Delete
+                  </button>
+                </div>
               </div>
+
             ))}
           </div>
         </div>

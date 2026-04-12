@@ -10,7 +10,7 @@ export default function AboutPage() {
         <div style={{ background: "linear-gradient(135deg, #1B4332, #2D6A4F)", padding: "4rem 0", color: "#fff", textAlign: "center" }}>
           <div className="container">
             <div style={{ fontSize: "4rem", marginBottom: "1rem" }}>🌿</div>
-            <h1 style={{ color: "#fff", marginBottom: "0.75rem" }}>About AyurvedaLearn</h1>
+            <h1 style={{ color: "#fff", marginBottom: "0.75rem" }}>About AyurLearn</h1>
             <p style={{ color: "rgba(255,255,255,0.85)", fontSize: "1.1rem", maxWidth: "600px", margin: "0 auto" }}>
               Ancient Wisdom. Modern Learning.
             </p>
@@ -18,7 +18,7 @@ export default function AboutPage() {
         </div>
         <div className="container" style={{ padding: "3rem 1.5rem", maxWidth: "800px" }}>
           <h2 style={{ color: "var(--color-primary)", marginBottom: "1rem" }}>Our Mission</h2>
-          <p>AyurvedaLearn is built to be the world's most complete, accessible, and student-friendly digital encyclopedia of Ayurveda. Modeled after W3Schools' proven learning interface but elevated with modern design, interactivity, and Ayurvedic identity.</p>
+          <p>AyurVidya is built to be the world's most complete, accessible, and student-friendly digital encyclopedia of Ayurveda. Modeled after W3Schools' proven learning interface but elevated with modern design, interactivity, and Ayurvedic identity.</p>
           <p>A student who goes through this platform should never need to open another textbook.</p>
 
           <h2 style={{ color: "var(--color-primary)", margin: "2rem 0 1rem" }}>What We Offer</h2>

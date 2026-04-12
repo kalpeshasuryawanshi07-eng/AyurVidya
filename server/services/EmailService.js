@@ -50,7 +50,7 @@ class EmailService {
       <body>
         <div class="container">
           <div class="header">
-            <div class="logo">🌿 AyurvedaLearn</div>
+            <div class="logo">🌿 AyurVidya</div>
           </div>
           <div class="content">
             <h2 style="color: #166534;">${title}</h2>
@@ -60,7 +60,7 @@ class EmailService {
             </div>` : ''}
           </div>
           <div class="footer">
-            <p>© 2026 AyurvedaLearn. All rights reserved.</p>
+            <p>© 2026 AyurVidya. All rights reserved.</p>
             <p>Empowering BAMS students through ancient wisdom and modern digital learning.</p>
           </div>
         </div>
@@ -72,13 +72,13 @@ class EmailService {
   async sendVerificationEmail(name, email, otp) {
     const body = `
       <p>Namaste, <strong>${name}</strong>!</p>
-      <p>Welcome to AyurvedaLearn! To complete your registration, please verify your email address using the One-Time Password (OTP) below:</p>
+      <p>Welcome to AyurVidya! To complete your registration, please verify your email address using the One-Time Password (OTP) below:</p>
       <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; border: 1px solid #166534; font-size: 24px; font-weight: 700; text-align: center; color: #166534; letter-spacing: 5px; margin: 20px 0;">
         ${otp}
       </div>
       <p>This OTP is valid for <strong>1 hour</strong>. If you didn't create an account, please ignore this email.</p>
     `;
-    return this.sendEmail(email, 'Verify your email - AyurvedaLearn', this.getTemplate('Email Verification OTP', body));
+    return this.sendEmail(email, 'Verify your email - AyurVidya', this.getTemplate('Email Verification OTP', body));
   }
 
   async sendForgotPasswordEmail(name, email, token) {
@@ -88,16 +88,16 @@ class EmailService {
       <p>We received a request to reset your password. If you didn't make this request, you can safely ignore this email.</p>
       <p>This reset link will expire in <strong>15 minutes</strong>.</p>
     `;
-    return this.sendEmail(email, 'Reset your password - AyurvedaLearn', this.getTemplate('Password Reset Request', body, 'Reset My Password', link));
+    return this.sendEmail(email, 'Reset your password - AyurVidya', this.getTemplate('Password Reset Request', body, 'Reset My Password', link));
   }
 
   async sendWelcomeEmail(name, email) {
     const body = `
       <p>Namaste <strong>${name}</strong>,</p>
-      <p>You are now a verified member of AyurvedaLearn. Your portal to advanced Ayurvedic curriculum is open.</p>
+      <p>You are now a verified member of AyurVidya. Your portal to advanced Ayurvedic curriculum is open.</p>
       <p>Explore subjects like Dravyaguna, Rog Nidan, and more with our premium materials.</p>
     `;
-    return this.sendEmail(email, 'Welcome to AyurvedaLearn!', this.getTemplate('Account Verified', body, 'Go to Dashboard', `${process.env.FRONTEND_URL}/dashboard`));
+    return this.sendEmail(email, 'Welcome to AyurVidya!', this.getTemplate('Account Verified', body, 'Go to Dashboard', `${process.env.FRONTEND_URL}/dashboard`));
   }
 
   async sendEnrollmentEmail(name, email, courseTitle) {

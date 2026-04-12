@@ -14,7 +14,6 @@ const normalizePaymentMethods = (methods) => {
     )
   );
 };
-
 const lessonSchema = new mongoose.Schema({
   lessonId: {
     type: String,
@@ -61,6 +60,29 @@ const lessonSchema = new mongoose.Schema({
   }
 }, { _id: false });
 
+const subtopicSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    trim: true
+  },
+  content: {
+    type: String,
+    trim: true
+  },
+  examples: {
+    type: [String],
+    default: []
+  },
+  applications: {
+    type: [String],
+    default: []
+  },
+  important_notes: {
+    type: [String],
+    default: []
+  }
+}, { _id: false });
+
 const topicSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -69,10 +91,26 @@ const topicSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: [true, 'Topic description is required'],
+    trim: true
+  },
+  definition: {
+    type: String,
+    trim: true
+  },
+  key_points: {
+    type: [String],
+    default: []
+  },
+  subtopics: {
+    type: [subtopicSchema],
+    default: []
+  },
+  summary: {
+    type: String,
     trim: true
   }
 }, { _id: false });
+
 
 const moduleSchema = new mongoose.Schema({
   title: {
@@ -125,7 +163,7 @@ const courseSchema = new mongoose.Schema({
   level: {
     type: String,
     enum: {
-      values: ['beginner', 'intermediate', 'advanced'],
+      values: ['beginner', 'intermediate', 'advanced', '1st Year', '2nd Year', '3rd Year'],
       message: '{VALUE} is not a valid level'
     }
   },
@@ -226,6 +264,32 @@ courseSchema.pre('validate', function setPaymentMethods(next) {
   }
 
   return next();
+});
+
+// Calculate metadata before saving
+courseSchema.pre('save', function calculateMetadata(next) {
+  // Update total modules count first
+  if (this.modules) {
+    this.totalModules = this.modules.length;
+  }
+
+  // Calculate lessons count
+  if (Array.isArray(this.lessons) && this.lessons.length > 0) {
+    this.totalLessons = this.lessons.length;
+  } else if (Array.isArray(this.modules)) {
+    // Count topics within modules as lessons
+    let count = 0;
+    this.modules.forEach(mod => {
+      if (Array.isArray(mod.topics)) {
+        count += mod.topics.length;
+      }
+    });
+    this.totalLessons = count;
+  } else {
+    this.totalLessons = 0;
+  }
+
+  next();
 });
 
 courseSchema.statics.PAYMENT_METHOD_VALUES = PAYMENT_METHOD_VALUES;

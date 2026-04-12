@@ -47,7 +47,7 @@ export default function LoginPage() {
       <Navbar />
       <div className={styles.container}>
         <div className={styles.card}>
-          <div className={styles.logo}>AyurvedaLearn</div>
+          <div className={styles.logo}>AyurVidya</div>
           <div className={styles.tabs}>
             <button className={`${styles.tab}${tab === "login" ? ` ${styles.activeTab}` : ""}`} onClick={() => setTab("login")}>{t("auth.login")}</button>
             <button className={`${styles.tab}${tab === "register" ? ` ${styles.activeTab}` : ""}`} onClick={() => setTab("register")}>{t("auth.register")}</button>

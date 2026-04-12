@@ -66,7 +66,7 @@ export default function HomePage() {
         <div className={styles.heroContent}>
           <div className={styles.heroBadge}>BAMS students & Practitioners</div>
           <h1 className={styles.heroTitle}>
-            AyurvedaLearn
+            AyurVidya
             <span className={styles.heroTagline}>{t("home.tagline")}</span>
           </h1>
           <p className={styles.heroSubtitle}>{t("home.subtitle")}</p>
@@ -140,7 +140,7 @@ export default function HomePage() {
 
       <section className={`${styles.section} ${styles.featuresSection}`}>
         <div className="container">
-          <h2 className={styles.sectionTitle}>{t("home.whyAyurvedaLearn")}</h2>
+          <h2 className={styles.sectionTitle}>{t("home.whyAyurVidya")}</h2>
           <div className={styles.featuresGrid}>
             {features.map((feature, index) => {
               const iconMap = { L: '📚', B: '🌐', Q: '✏️', H: '🌿' };

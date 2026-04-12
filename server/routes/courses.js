@@ -8,6 +8,34 @@ const LanguageService = require('../services/LanguageService');
 const router = express.Router();
 
 /**
+ * Helper to get a flat list of lessons from a course object,
+ * whether it uses the flat lessons array or modules/topics structure.
+ */
+const getVirtualLessons = (course) => {
+  if (Array.isArray(course.lessons) && course.lessons.length > 0) {
+    return course.lessons;
+  }
+
+  const flattenedArr = [];
+  if (Array.isArray(course.modules)) {
+    course.modules.forEach((mod, mIdx) => {
+      if (Array.isArray(mod.topics)) {
+        mod.topics.forEach((topic, tIdx) => {
+          flattenedArr.push({
+            ...topic,
+            lessonId: topic.lessonId || `m${mIdx}-t${tIdx}`,
+            title: topic.title || 'Untitled Topic',
+            duration: topic.duration || 15
+          });
+        });
+      }
+    });
+  }
+  return flattenedArr;
+};
+
+
+/**
  * GET /api/courses
  * Get all available courses
  * Public route
@@ -194,6 +222,11 @@ router.get(
       const courseObj = course.toObject();
       const localizedCourse = LanguageService.selectContent(courseObj, lang);
 
+      // Ensure lessons array is populated for frontend (CertificatesPage, etc.)
+      if (!localizedCourse.lessons || localizedCourse.lessons.length === 0) {
+        localizedCourse.lessons = getVirtualLessons(courseObj);
+      }
+
       // Check if user is enrolled (if authenticated)
       let isEnrolled = false;
       if (req.user) {
@@ -214,6 +247,7 @@ router.get(
           }
         }
       });
+
     } catch (error) {
       res.status(500).json({
         status: 'error',
@@ -370,8 +404,11 @@ router.post(
         });
       }
 
+      // Get virtual lessons list
+      const lessons = getVirtualLessons(course);
+
       // Verify lesson exists in course
-      const lessonExists = course.lessons.some(lesson => lesson.lessonId === lessonId);
+      const lessonExists = lessons.some(lesson => lesson.lessonId === lessonId);
       if (!lessonExists) {
         return res.status(404).json({
           status: 'error',
@@ -379,6 +416,7 @@ router.post(
           errors: ['Lesson does not exist in this course']
         });
       }
+
 
       // Find enrollment
       const enrollment = await Enrollment.findOne({
@@ -400,9 +438,10 @@ router.post(
       }
 
       // Calculate progress percentage
-      const totalLessons = course.lessons.length;
+      const totalLessons = lessons.length;
       const completedCount = enrollment.completedLessons.length;
       enrollment.progress = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+
 
       // Mark course as completed if 100% progress
       if (enrollment.progress === 100 && !enrollment.isCompleted) {
@@ -484,17 +523,27 @@ router.get(
         courseId: course._id
       });
 
+      // Get virtual lessons to know total count
+      const lessons = getVirtualLessons(course);
+
       if (!enrollment) {
-        return res.status(404).json({
-          status: 'error',
-          message: 'Enrollment not found',
-          errors: ['You are not enrolled in this course']
+        return res.status(200).json({
+          status: 'success',
+          message: 'User is not enrolled in this course',
+          data: {
+            courseSlug: course.slug,
+            progress: 0,
+            completedLessons: [],
+            totalLessons: lessons.length,
+            lastAccessedAt: null
+          }
         });
       }
 
       // Update lastAccessedAt
       enrollment.lastAccessedAt = new Date();
       await enrollment.save();
+
 
       res.status(200).json({
         status: 'success',
@@ -503,10 +552,11 @@ router.get(
           courseSlug: course.slug,
           progress: enrollment.progress,
           completedLessons: enrollment.completedLessons,
-          totalLessons: course.lessons.length,
+          totalLessons: lessons.length,
           lastAccessedAt: enrollment.lastAccessedAt
         }
       });
+
     } catch (error) {
       res.status(500).json({
         status: 'error',

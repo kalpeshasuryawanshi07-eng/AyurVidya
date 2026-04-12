@@ -46,7 +46,7 @@ export default function Navbar() {
         <div className={styles.inner}>
           <Link to="/" className={styles.logo} onClick={() => { setMobileMenuOpen(false); setUserMenuOpen(false); }}>
             <span className={styles.logoIcon}>🌿</span>
-            <span className={styles.logoText}>AyurvedaLearn</span>
+            <span className={styles.logoText}>AyurVidya</span>
           </Link>
 
           <div className={styles.navLinks}>

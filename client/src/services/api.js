@@ -165,7 +165,7 @@ export async function initiateCheckout(courseId, paymentMethod, onSuccess, onFai
       key: data.keyId,
       amount: data.amount,
       currency: data.currency,
-      name: "AyurvedaLearn",
+      name: "AyurVidya",
       description: "Course Enrollment",
       order_id: data.razorpayOrderId,
       theme: { color: "#1B4332" },

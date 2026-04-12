@@ -133,7 +133,9 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  align-self: start;
 }
+
 
 .navLink {
   padding: 0.75rem 1.25rem;
@@ -360,7 +362,11 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  position: sticky;
+  top: 100px;
+  align-self: start;
 }
+
 
 .asideCard {
   background: #fff;
@@ -441,6 +447,34 @@
   border-color: rgba(34, 197, 94, 0.3);
 }
 
+:global(body.dark) .vivaSection {
+  background: #111827;
+  border-color: #1e293b;
+}
+
+:global(body.dark) .manuscriptBox {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+:global(body.dark) .etymologyHeading {
+  color: #4ade80;
+}
+
+:global(body.dark) .synonymRow {
+  border-bottom-color: #1e293b;
+}
+
+:global(body.dark) .synonymItem {
+  color: #4ade80;
+}
+
+:global(body.dark) .synonymMeaning {
+  color: #94a3b8;
+}
+
+
 /* Academic & Clinical enhancements */
 .vivaSection {
   background: #fdfaf3;
@@ -458,7 +492,44 @@
   border: 1px solid #e5e7eb;
   border-radius: 16px;
   line-height: 2;
+  color: #1e293b;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
 }
+
+.etymologyHeading {
+  font-family: 'Outfit', sans-serif;
+  color: #2d6a4f;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+}
+
+.synonymRow {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 1.5rem;
+  padding: 1rem 0;
+  border-bottom: 1px dashed rgba(0,0,0,0.05);
+}
+
+.synonymRow:last-child {
+  border-bottom: none;
+}
+
+.synonymItem {
+  font-weight: 800;
+  color: #2d6a4f;
+  font-size: 0.95rem;
+}
+
+.synonymMeaning {
+  color: #475569;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
 
 .ganasGrid {
   display: grid;

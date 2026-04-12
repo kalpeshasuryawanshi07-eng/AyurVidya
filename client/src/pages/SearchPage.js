@@ -141,7 +141,7 @@ export default function SearchPage() {
           {!queryFromUrl && (
             <div className="empty-state">
               <div className="empty-state-icon">S</div>
-              <h3>Search AyurvedaLearn</h3>
+              <h3>Search AyurVidya</h3>
               <p>Search for topics, herbs, subjects, and more.</p>
             </div>
           )}

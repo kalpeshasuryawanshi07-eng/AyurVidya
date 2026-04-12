@@ -8,9 +8,26 @@ import ScrollToTop from "../components/common/ScrollToTop";
 import { CardLoader } from "../components/common/Loader";
 import styles from "../styles/CoursesPage.module.css";
 
-const levelBadge = (level) => {
-  const map = { beginner: "badge-beginner", intermediate: "badge-intermediate", advanced: "badge-advanced" };
-  return <span className={`badge ${map[level] || "badge-blue"}`}>{level || "beginner"}</span>;
+const levelBadge = (level, t) => {
+  const styleMap = { 
+    '1st Year': "badge-beginner", 
+    '2nd Year': "badge-intermediate", 
+    '3rd Year': "badge-advanced",
+    'beginner': "badge-beginner",
+    'intermediate': "badge-intermediate",
+    'advanced': "badge-advanced"
+  };
+  
+  const labelMap = {
+    '1st Year': t("topic.beginner"),
+    '2nd Year': t("topic.intermediate"),
+    '3rd Year': t("topic.advanced"),
+    'beginner': t("topic.beginner"),
+    'intermediate': t("topic.intermediate"),
+    'advanced': t("topic.advanced")
+  };
+
+  return <span className={`badge ${styleMap[level] || "badge-blue"}`}>{labelMap[level] || level || t("topic.beginner")}</span>;
 };
 
 const CourseCardHeader = ({ course }) => {
@@ -86,17 +103,18 @@ export default function CoursesPage() {
                     <div className={styles.courseContent}>
                       <div className={styles.courseTop}>
                         <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-                          {levelBadge(course.level)}
+                          {levelBadge(course.level, t)}
                           {isFree && <span className="badge badge-green">Free</span>}
                         </div>
                       </div>
                       <h3 className={styles.courseTitle}>{course.title}</h3>
                       <p className={styles.courseDesc}>{course.description}</p>
                       <div className={styles.courseMeta}>
-                        <span>Modules: {Math.max(1, Math.ceil(lessonCount / 5))}</span>
-                        <span>Lessons: {lessonCount}</span>
+                        <span>Modules: {course.totalModules || 1}</span>
+                        <span>Lessons: {course.totalLessons || 0}</span>
                         <span>Duration: {durationLabel}</span>
                       </div>
+
                       <div className={styles.courseStats}>
                         <span>Students: {(course.enrollmentCount || 0).toLocaleString()}</span>
                         <span>Rating: {course.rating || 0}</span>

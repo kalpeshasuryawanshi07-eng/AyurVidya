@@ -223,8 +223,10 @@ class ProgressService {
     return {
       currentStreak,
       longestStreak,
-      lastActivity: progressRecords[progressRecords.length - 1].completedAt
+      lastActivity: progressRecords[progressRecords.length - 1].completedAt,
+      activityDates: uniqueDates.map(timestamp => new Date(timestamp).toISOString())
     };
+
   }
 
   /**
