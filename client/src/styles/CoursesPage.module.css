@@ -6,62 +6,6 @@
 .header h1 { color: #fff; margin-bottom: 0.5rem; }
 .header p  { color: rgba(255,255,255,0.8); margin: 0; }
 
-.filterBar {
-  background: var(--color-surface-card);
-  border-bottom: 1px solid var(--color-border);
-  position: sticky;
-  top: var(--navbar-height);
-  z-index: 10;
-  padding: 1rem 0;
-}
-
-body.dark .filterBar {
-  background: var(--color-surface-alt);
-}
-
-.filterList {
-  display: flex;
-  gap: 0.75rem;
-  overflow-x: auto;
-  padding-bottom: 0.25rem;
-  scrollbar-width: none; /* Hide scrollbar Firefox */
-}
-
-.filterList::-webkit-scrollbar {
-  display: none; /* Hide scrollbar Chrome/Safari */
-}
-
-.filterBtn {
-  padding: 0.5rem 1.25rem;
-  border-radius: var(--radius-pill);
-  font-size: 0.875rem;
-  font-weight: 600;
-  background: var(--color-surface-alt);
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border);
-  white-space: nowrap;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-body.dark .filterBtn {
-  background: #1e293b;
-  color: var(--color-text-secondary);
-  border-color: #334155;
-}
-
-.filterBtn:hover {
-  border-color: var(--color-primary-light);
-  color: var(--color-primary);
-}
-
-.filterBtn.active {
-  background: var(--color-primary);
-  color: #fff;
-  border-color: var(--color-primary);
-  box-shadow: 0 4px 12px rgba(22, 101, 52, 0.2);
-}
-
 .coursesGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
