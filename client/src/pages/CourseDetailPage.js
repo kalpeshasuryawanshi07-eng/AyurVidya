@@ -43,11 +43,14 @@ export default function CourseDetailPage() {
   const [enrolledSlugs, setEnrolledSlugs] = useState([]);
   const [courseProgress, setCourseProgress] = useState(null);
 
+  const [imageError, setImageError] = useState(false);
+
   useEffect(() => {
     const fetchCourse = async () => {
       try {
         setLoading(true);
         setError("");
+        setImageError(false); // Reset on new course
         const data = await getCourseBySlug(courseSlug);
         setCourse(data.course || null);
       } catch (err) {
@@ -260,8 +263,12 @@ export default function CourseDetailPage() {
             <div className={styles.headerGrid}>
               <div className={styles.headerHero}>
                 <div className={styles.thumbnailWrap}>
-                  {course.thumbnail ? (
-                    <img src={course.thumbnail} alt={course.title} />
+                  {course.thumbnail && !imageError ? (
+                    <img 
+                      src={course.thumbnail} 
+                      alt={course.title} 
+                      onError={() => setImageError(true)}
+                    />
                   ) : (
                     <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.05)", fontSize: "4rem" }}>
                       🌿
