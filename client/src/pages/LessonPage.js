@@ -371,10 +371,7 @@ export default function LessonPage() {
             </div>
             
             {currentLessonData?.videoUrl && (
-              <div style={{ marginTop: "4rem", paddingTop: "3rem", borderTop: "1px solid var(--color-border)" }}>
-                <div className={styles.videoLabel}>
-                  <i>▶</i> <b>Educational Video Tutorial</b>
-                </div>
+              <div style={{ marginTop: "5rem", paddingTop: "3rem", borderTop: "1px solid var(--color-border)" }}>
                 <div className={styles.videoSection}>
                   <div className={styles.videoContainer}>
                     <iframe
@@ -387,9 +384,6 @@ export default function LessonPage() {
                     ></iframe>
                   </div>
                 </div>
-                <p style={{ marginTop: "1rem", fontSize: "0.85rem", color: "var(--color-text-light)", textAlign: "center" }}>
-                  Visual explanation of <strong>{currentLessonData.title}</strong>
-                </p>
               </div>
             )}
             

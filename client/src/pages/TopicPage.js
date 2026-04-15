@@ -336,25 +336,16 @@ export default function TopicPage() {
           </section>
 
           {topic.videoUrl && (
-            <section id="video" className={styles.videoWrapper}>
-              <div className={styles.videoHeader}>
-                <div className={styles.videoIcon}>▶</div>
-                <div>
-                  <h3>Educational Video</h3>
-                  <p>Watch this detailed explanation of {topic.title}</p>
-                </div>
-              </div>
-              <div className={styles.videoSection}>
-                <div className={styles.videoContainer}>
-                  <iframe
-                    src={getEmbedUrl(topic.videoUrl)}
-                    title="Topic Video"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className={styles.videoIframe}
-                  ></iframe>
-                </div>
+            <section id="video" className={styles.videoSection} style={{ marginTop: "4rem" }}>
+              <div className={styles.videoContainer}>
+                <iframe
+                  src={getEmbedUrl(topic.videoUrl)}
+                  title="Topic Video"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className={styles.videoIframe}
+                ></iframe>
               </div>
             </section>
           )}
