@@ -166,8 +166,8 @@ class CertificateService {
       valid: true,
       certificate: {
         certificateNumber: certificate.certificateNumber,
-        studentName: certificate.userId.name,
-        courseName: certificate.courseId.title,
+        studentName: certificate.userId?.name || 'Student',
+        courseName: certificate.courseId?.title || 'Course',
         issuedAt: certificate.issuedAt,
         completionDate: certificate.completionDate,
         grade: certificate.grade,

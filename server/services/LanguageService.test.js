@@ -61,8 +61,8 @@ describe('LanguageService', () => {
         expect(result.introduction).toBe('Vata is one of the three doshas');
         expect(result.slug).toBe('vata-dosha');
         expect(result.difficulty).toBe('beginner');
-        expect(result.titleMr).toBeUndefined();
-        expect(result.introductionMr).toBeUndefined();
+        expect(result.titleMr).toBe('वात दोष');
+        expect(result.introductionMr).toBe('वात तीन दोषांपैकी एक आहे');
       });
 
       it('should return English content for all translatable fields', () => {
@@ -210,7 +210,7 @@ describe('LanguageService', () => {
         expect(result.shloka.transliteration).toBe('vātaḥ pittaṃ kaphaśceti');
         expect(result.shloka.translation).toBe('Vata, Pitta and Kapha are the three doshas');
         expect(result.shloka.source).toBe('Charaka Samhita');
-        expect(result.shloka.translationMr).toBeUndefined();
+        expect(result.shloka.translationMr).toBe('वात, पित्त आणि कफ हे तीन दोष आहेत');
       });
 
       it('should return Marathi translation for shloka in Marathi mode', () => {

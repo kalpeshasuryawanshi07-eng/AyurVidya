@@ -118,7 +118,10 @@ const herbSchema = new mongoose.Schema({
   },
   virya: {
     type: String,
-    trim: true,
+    enum: {
+      values: ['hot', 'cold', ''],
+      message: '{VALUE} is not a valid virya value'
+    },
     default: ''
   },
   vipaka: {

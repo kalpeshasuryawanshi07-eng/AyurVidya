@@ -32,8 +32,21 @@ class PaymentService {
     const course = await Course.findById(courseId);
     if (!course) throw new Error('Course not found');
 
+    // Check if user is already enrolled
+    const existingEnrollment = await Enrollment.findOne({ userId, courseId });
+    if (existingEnrollment) {
+      throw new Error('User is already enrolled in this course');
+    }
+
     if (!course.isPaid || course.price === 0) {
       throw new Error('This course is free.');
+    }
+
+    // Validate payment method if specified
+    if (paymentMethod && course.paymentMethods && course.paymentMethods.length > 0) {
+      if (!course.paymentMethods.includes(paymentMethod)) {
+        throw new Error('Selected payment method is not available for this course');
+      }
     }
 
     const orderOptions = {
@@ -114,7 +127,13 @@ class PaymentService {
     if (!course) throw new Error('Course not found');
 
     const existingEnrollment = await Enrollment.findOne({ userId, courseId });
-    if (existingEnrollment) throw new Error('Already enrolled');
+    if (existingEnrollment) {
+      throw new Error('User is already enrolled in this course');
+    }
+
+    if (course.isPaid && course.price > 0) {
+      throw new Error('This course requires payment');
+    }
 
     const enrollment = new Enrollment({ userId, courseId, enrolledAt: new Date() });
     await enrollment.save();
@@ -130,11 +149,13 @@ class PaymentService {
       console.error('Email failed:', err);
     }
 
-    return enrollment;
+    return enrollment.toObject();
   }
 
   async getPaymentHistory(userId) {
-    return Payment.find({ userId }).populate('courseId').sort({ createdAt: -1 });
+    return Payment.find({ userId })
+      .populate('courseId', 'title titleMr slug price')
+      .sort({ createdAt: -1 });
   }
 }
 

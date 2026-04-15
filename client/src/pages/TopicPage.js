@@ -200,6 +200,24 @@ export default function TopicPage() {
   const furtherReading = Array.isArray(topic.furtherReading) ? topic.furtherReading : [];
   const diffMap = { beginner: "badge-beginner", intermediate: "badge-intermediate", advanced: "badge-advanced" };
 
+  const getEmbedUrl = (url) => {
+    if (!url) return null;
+    
+    // YouTube
+    const ytMatch = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=|embed\/|v\/|shorts\/)?([^?&"'>]+)/);
+    if (ytMatch) {
+      return `https://www.youtube.com/embed/${ytMatch[1]}`;
+    }
+    
+    // Vimeo
+    const vimeoMatch = url.match(/(?:https?:\/\/)?(?:www\.)?(?:vimeo\.com)\/([^?&"'>]+)/);
+    if (vimeoMatch) {
+      return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+    }
+    
+    return url;
+  };
+
   return (
     <div>
       <div className="reading-progress-bar" style={{ width: `${scrollPct}%` }} />
@@ -230,6 +248,7 @@ export default function TopicPage() {
               {completed && <span className="badge badge-green">{t("topic.completed")}</span>}
             </div>
           </div>
+
 
           <section id="introduction" className={styles.section}>
             <h2 className="section-heading">{t("topic.introduction")}</h2>
@@ -315,6 +334,24 @@ export default function TopicPage() {
               ))}
             </ul>
           </section>
+
+          {topic.videoUrl && (
+            <section id="video" className={styles.section}>
+              <h2 className="section-heading">Educational Video</h2>
+              <div className={styles.videoSection}>
+                <div className={styles.videoContainer}>
+                  <iframe
+                    src={getEmbedUrl(topic.videoUrl)}
+                    title="Topic Video"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className={styles.videoIframe}
+                  ></iframe>
+                </div>
+              </div>
+            </section>
+          )}
 
           <TopicNavigation prev={navigation.previous} next={navigation.next} subjectSlug={subjectSlug} />
         </main>

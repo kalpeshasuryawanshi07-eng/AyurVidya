@@ -16,6 +16,24 @@ export default function LessonPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToast } = useToast();
+
+  const getEmbedUrl = (url) => {
+    if (!url) return null;
+    
+    // YouTube
+    const ytMatch = url.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=|embed\/|v\/|shorts\/)?([^?&"'>]+)/);
+    if (ytMatch) {
+      return `https://www.youtube.com/embed/${ytMatch[1]}`;
+    }
+    
+    // Vimeo
+    const vimeoMatch = url.match(/(?:https?:\/\/)?(?:www\.)?(?:vimeo\.com)\/([^?&"'>]+)/);
+    if (vimeoMatch) {
+      return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+    }
+    
+    return url;
+  };
   
   const [currentLesson, setCurrentLesson] = useState(0);
   const [course, setCourse] = useState(null);
@@ -351,7 +369,23 @@ export default function LessonPage() {
                   <div className="empty-state">No content available for this topic.</div>
                )}
             </div>
-
+            
+            {currentLessonData?.videoUrl && (
+              <div className={styles.videoSection} style={{ marginTop: "2rem" }}>
+                <h3 style={{ marginBottom: "1rem" }}>Educational Video</h3>
+                <div className={styles.videoContainer}>
+                  <iframe
+                    src={getEmbedUrl(currentLessonData.videoUrl)}
+                    title="Lesson Video"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className={styles.videoIframe}
+                  ></iframe>
+                </div>
+              </div>
+            )}
+            
             <footer className={styles.actionFooter}>
                <div className="flex flex-gap-md">
                   {currentLesson > 0 && (

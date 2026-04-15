@@ -50,7 +50,7 @@ describe('Topics Routes', () => {
       expect(response.body.data.topic).toEqual(mockTopic);
       expect(response.body.data.navigation).toEqual(mockNavigation);
       expect(ContentService.getTopicBySlug).toHaveBeenCalledWith('tridosha-theory', 'en');
-      expect(ContentService.getAdjacentTopics).toHaveBeenCalledWith('tridosha-theory');
+      expect(ContentService.getAdjacentTopics).toHaveBeenCalledWith('tridosha-theory', 'en');
     });
 
     it('should return topic with Marathi content when lang=mr', async () => {
@@ -143,7 +143,7 @@ describe('Topics Routes', () => {
       expect(response.status).toBe(200);
       expect(response.body.status).toBe('success');
       expect(response.body.data).toEqual(mockResult);
-      expect(ContentService.getTopics).toHaveBeenCalledWith({}, { page: 1, limit: 20 });
+      expect(ContentService.getTopics).toHaveBeenCalledWith({}, { page: 1, limit: 20 }, 'en');
     });
 
     it('should filter topics by subjectSlug', async () => {
@@ -165,7 +165,8 @@ describe('Topics Routes', () => {
       expect(response.body.data).toEqual(mockResult);
       expect(ContentService.getTopics).toHaveBeenCalledWith(
         { subjectSlug: 'ayurveda-fundamentals' },
-        { page: 1, limit: 20 }
+        { page: 1, limit: 20 },
+        'en'
       );
     });
 
@@ -188,7 +189,8 @@ describe('Topics Routes', () => {
       expect(response.body.data).toEqual(mockResult);
       expect(ContentService.getTopics).toHaveBeenCalledWith(
         { difficulty: 'beginner' },
-        { page: 1, limit: 20 }
+        { page: 1, limit: 20 },
+        'en'
       );
     });
 
@@ -211,7 +213,8 @@ describe('Topics Routes', () => {
       expect(response.body.data).toEqual(mockResult);
       expect(ContentService.getTopics).toHaveBeenCalledWith(
         {},
-        { page: 2, limit: 5 }
+        { page: 2, limit: 5 },
+        'en'
       );
     });
 
@@ -239,7 +242,8 @@ describe('Topics Routes', () => {
       expect(response.body.data).toEqual(mockResult);
       expect(ContentService.getTopics).toHaveBeenCalledWith(
         { subjectSlug: 'ayurveda-fundamentals', difficulty: 'intermediate' },
-        { page: 1, limit: 10 }
+        { page: 1, limit: 10 },
+        'en'
       );
     });
 

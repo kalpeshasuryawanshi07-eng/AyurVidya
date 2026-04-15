@@ -122,10 +122,10 @@ router.get(
       }).lean();
 
       if (!note) {
-        return res.status(200).json({
-          status: 'success',
-          message: 'No note found for this topic',
-          data: { note: null }
+        return res.status(404).json({
+          status: 'error',
+          message: 'Note not found',
+          errors: ['No note found for this topic']
         });
       }
 

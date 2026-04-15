@@ -203,7 +203,13 @@ const topicSchema = new mongoose.Schema({
       type: String,
       trim: true
     }
-  }]
+  }],
+  
+  // Video support
+  videoUrl: {
+    type: String,
+    trim: true
+  }
 }, {
   timestamps: true
 });

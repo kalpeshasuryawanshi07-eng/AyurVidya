@@ -156,7 +156,7 @@ describe('Subjects Routes', () => {
       expect(response.status).toBe(200);
       expect(response.body.status).toBe('success');
       expect(response.body.data.subjects).toEqual(mockSubjects);
-      expect(ContentService.getSubjects).toHaveBeenCalledWith({});
+      expect(ContentService.getSubjects).toHaveBeenCalledWith({}, 'en');
     });
 
     it('should filter subjects by year', async () => {
@@ -179,7 +179,7 @@ describe('Subjects Routes', () => {
       expect(response.status).toBe(200);
       expect(response.body.status).toBe('success');
       expect(response.body.data.subjects).toEqual(mockSubjects);
-      expect(ContentService.getSubjects).toHaveBeenCalledWith({ year: 1 });
+      expect(ContentService.getSubjects).toHaveBeenCalledWith({ year: 1 }, 'en');
     });
 
     it('should filter subjects by year 5', async () => {
@@ -202,7 +202,7 @@ describe('Subjects Routes', () => {
       expect(response.status).toBe(200);
       expect(response.body.status).toBe('success');
       expect(response.body.data.subjects).toEqual(mockSubjects);
-      expect(ContentService.getSubjects).toHaveBeenCalledWith({ year: 5 });
+      expect(ContentService.getSubjects).toHaveBeenCalledWith({ year: 5 }, 'en');
     });
 
     it('should return 400 for year less than 1', async () => {
@@ -265,7 +265,7 @@ describe('Subjects Routes', () => {
       expect(response.status).toBe(200);
       expect(response.body.status).toBe('success');
       expect(response.body.data.subjects).toEqual([]);
-      expect(ContentService.getSubjects).toHaveBeenCalledWith({ year: 3 });
+      expect(ContentService.getSubjects).toHaveBeenCalledWith({ year: 3 }, 'en');
     });
   });
 });

@@ -26,6 +26,233 @@ const PAYMENT_METHOD_OPTIONS = [
   { value: "paylater", label: "Pay Later" },
 ];
 
+const MODULE_TITLE_KEYS = ["module_name", "module_title", "title", "name", "chapter_name", "section_name"];
+const TOPIC_TITLE_KEYS = ["topic_name", "title", "name", "heading", "lesson_title", "chapter_title"];
+
+const getStringValue = (value) => (typeof value === "string" ? value.trim() : "");
+
+const pickFirstString = (objectValue, keys, fallback = "") => {
+  if (!objectValue || typeof objectValue !== "object" || Array.isArray(objectValue)) {
+    return fallback;
+  }
+
+  for (const key of keys) {
+    const text = getStringValue(objectValue[key]);
+    if (text) return text;
+  }
+
+  return fallback;
+};
+
+const toStringArray = (value) => {
+  if (!value) return [];
+  if (Array.isArray(value)) {
+    return value
+      .map((entry) => {
+        if (typeof entry === "string") return entry.trim();
+        if (entry && typeof entry === "object") {
+          return pickFirstString(entry, ["title", "name", "text", "content"], "");
+        }
+        return getStringValue(String(entry ?? ""));
+      })
+      .filter(Boolean);
+  }
+  if (typeof value === "string" && value.trim()) return [value.trim()];
+  return [];
+};
+
+const normalizeSubtopic = (subtopic, index = 0) => {
+  if (typeof subtopic === "string") {
+    const title = subtopic.trim();
+    if (!title) return null;
+    return {
+      title,
+      content: "",
+      examples: [],
+      applications: [],
+      important_notes: [],
+    };
+  }
+
+  if (!subtopic || typeof subtopic !== "object" || Array.isArray(subtopic)) return null;
+
+  return {
+    title: pickFirstString(subtopic, ["title", "name", "subtopic_name", "heading"], `Subtopic ${index + 1}`),
+    content: pickFirstString(subtopic, ["content", "description", "definition", "text"], ""),
+    examples: toStringArray(subtopic.examples),
+    applications: toStringArray(subtopic.applications || subtopic.real_life_application),
+    important_notes: toStringArray(subtopic.important_notes || subtopic.notes),
+  };
+};
+
+const looksLikeTopicObject = (value) => {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+
+  const hasTitle = TOPIC_TITLE_KEYS.some((key) => getStringValue(value[key]));
+  const hasBody =
+    Boolean(getStringValue(value.definition)) ||
+    Boolean(getStringValue(value.description)) ||
+    Boolean(getStringValue(value.detailed_explanation)) ||
+    Boolean(getStringValue(value.summary)) ||
+    Boolean(getStringValue(value.content)) ||
+    (Array.isArray(value.key_points) && value.key_points.length > 0) ||
+    (Array.isArray(value.key_concepts) && value.key_concepts.length > 0) ||
+    (Array.isArray(value.subtopics) && value.subtopics.length > 0);
+
+  return hasTitle && hasBody;
+};
+
+const normalizeTopic = (topic, index = 0) => {
+  if (typeof topic === "string") {
+    const title = topic.trim();
+    if (!title) return null;
+    return {
+      title,
+      description: "",
+      definition: "",
+      key_points: [],
+      summary: "",
+      subtopics: [],
+    };
+  }
+
+  if (!topic || typeof topic !== "object" || Array.isArray(topic)) return null;
+
+  const subtopicSource = topic.subtopics || topic.sections || topic.children || topic.items || [];
+
+  return {
+    title: pickFirstString(topic, TOPIC_TITLE_KEYS, `Topic ${index + 1}`),
+    description: pickFirstString(topic, ["description", "detailed_explanation", "overview", "intro"], ""),
+    definition: pickFirstString(topic, ["definition"], ""),
+    key_points: toStringArray(topic.key_points || topic.key_concepts || topic.points || topic.highlights),
+    summary: pickFirstString(topic, ["summary", "conclusion", "takeaway"], ""),
+    subtopics: Array.isArray(subtopicSource)
+      ? subtopicSource.map((subtopic, subtopicIndex) => normalizeSubtopic(subtopic, subtopicIndex)).filter(Boolean)
+      : [],
+  };
+};
+
+const normalizeModule = (moduleValue, index = 0) => {
+  if (!moduleValue || typeof moduleValue !== "object" || Array.isArray(moduleValue)) return null;
+
+  const topicsSource = moduleValue.topics || moduleValue.lessons || moduleValue.chapters || moduleValue.sections || moduleValue.items;
+  const topics = Array.isArray(topicsSource)
+    ? topicsSource.map((topic, topicIndex) => normalizeTopic(topic, topicIndex)).filter(Boolean)
+    : [];
+
+  if (topics.length === 0 && looksLikeTopicObject(moduleValue)) {
+    const inlineTopic = normalizeTopic(moduleValue, 0);
+    if (inlineTopic) topics.push(inlineTopic);
+  }
+
+  return {
+    title: pickFirstString(moduleValue, MODULE_TITLE_KEYS, `Module ${index + 1}`),
+    topics,
+  };
+};
+
+const dedupeTopicsByTitle = (topics) => {
+  const seen = new Set();
+  return topics.filter((topic) => {
+    const key = String(topic?.title || "").trim().toLowerCase();
+    if (!key) return false;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+};
+
+const collectTopicObjects = (node, bucket, depth = 0) => {
+  if (!node || depth > 10) return;
+
+  if (Array.isArray(node)) {
+    node.forEach((entry) => collectTopicObjects(entry, bucket, depth + 1));
+    return;
+  }
+
+  if (typeof node !== "object") return;
+
+  if (looksLikeTopicObject(node)) {
+    bucket.push(node);
+  }
+
+  Object.values(node).forEach((value) => {
+    if (value && typeof value === "object") {
+      collectTopicObjects(value, bucket, depth + 1);
+    }
+  });
+};
+
+const extractModulesFromParsedJson = (parsed) => {
+  if (!parsed) return [];
+
+  if (Array.isArray(parsed)) {
+    const asModules = parsed.map((moduleValue, index) => normalizeModule(moduleValue, index)).filter(Boolean);
+    const hasTopics = asModules.some((moduleValue) => moduleValue.topics.length > 0);
+    if (hasTopics) return asModules;
+
+    const asTopics = dedupeTopicsByTitle(
+      parsed.map((topicValue, index) => normalizeTopic(topicValue, index)).filter(Boolean)
+    );
+    return asTopics.length > 0 ? [{ title: "Imported Module", topics: asTopics }] : [];
+  }
+
+  if (typeof parsed === "object") {
+    if (Array.isArray(parsed.modules)) {
+      return parsed.modules.map((moduleValue, index) => normalizeModule(moduleValue, index)).filter(Boolean);
+    }
+
+    const directTopicArrays = [parsed.topics, parsed.lessons, parsed.chapters, parsed.sections].find(
+      (value) => Array.isArray(value) && value.length > 0
+    );
+
+    if (directTopicArrays) {
+      const topics = dedupeTopicsByTitle(
+        directTopicArrays.map((topicValue, index) => normalizeTopic(topicValue, index)).filter(Boolean)
+      );
+      return topics.length > 0 ? [{ title: "Imported Module", topics }] : [];
+    }
+
+    const collectedTopicObjects = [];
+    collectTopicObjects(parsed, collectedTopicObjects);
+    const normalizedTopics = dedupeTopicsByTitle(
+      collectedTopicObjects.map((topicValue, index) => normalizeTopic(topicValue, index)).filter(Boolean)
+    );
+
+    if (normalizedTopics.length > 0) {
+      return [{ title: "Imported Module", topics: normalizedTopics }];
+    }
+  }
+
+  return [];
+};
+
+const analyzeCourseJson = (parsed) => {
+  const title = pickFirstString(parsed, ["course_title", "courseTitle", "title", "name"], "");
+  const description = pickFirstString(parsed, ["description", "course_description", "summary", "about"], "");
+  const modules = extractModulesFromParsedJson(parsed);
+
+  const topicCount = modules.reduce((sum, moduleValue) => sum + (moduleValue.topics?.length || 0), 0);
+  const subtopicCount = modules.reduce(
+    (sum, moduleValue) =>
+      sum +
+      (moduleValue.topics || []).reduce(
+        (topicSum, topicValue) => topicSum + (topicValue.subtopics?.length || 0),
+        0
+      ),
+    0
+  );
+
+  return {
+    title,
+    description,
+    modules,
+    moduleCount: modules.length,
+    topicCount,
+    subtopicCount,
+  };
+};
+
 export default function AdminPage() {
   const { user, loading, isAdmin } = useAuth();
   const { addToast } = useToast();
@@ -47,7 +274,9 @@ export default function AdminPage() {
     paymentMethods: [],
   });
   const [courseJson, setCourseJson] = useState("");
+  const [jsonAnalysis, setJsonAnalysis] = useState(null);
   const [editingCourseId, setEditingCourseId] = useState(null);
+  const [topicVideos, setTopicVideos] = useState({}); // { "Topic title": "url" }
 
 
   useEffect(() => {
@@ -104,51 +333,49 @@ export default function AdminPage() {
     e.preventDefault();
     try {
       let modules = [];
+      let analyzedJson = null;
+
       if (courseJson.trim()) {
         try {
           const parsed = JSON.parse(courseJson);
-          if (parsed.course_title && !newCourse.title) {
-            newCourse.title = parsed.course_title;
-          }
-          if (parsed.description && !newCourse.description) {
-            newCourse.description = parsed.description;
-          }
-
-          if (Array.isArray(parsed.modules)) {
-            modules = parsed.modules.map(mod => ({
-              title: mod.module_name || mod.title || "Untitled Module",
-              topics: Array.isArray(mod.topics) ? mod.topics.map(topic => ({
-                title: topic.topic_name || topic.title || "Untitled Topic",
-                description: topic.description || "",
-                definition: topic.definition || "",
-                key_points: topic.key_points || [],
-                summary: topic.summary || "",
-                subtopics: Array.isArray(topic.subtopics) ? topic.subtopics.map(st => ({
-                  title: st.title || "Untitled Subtopic",
-                  content: st.content || "",
-                  examples: st.examples || [],
-                  applications: st.applications || [],
-                  important_notes: st.important_notes || []
-                })) : []
-              })) : []
-            }));
-          } else if (Array.isArray(parsed)) {
-            // Handle if they just pasted the modules array directly
-            modules = parsed;
-          }
+          analyzedJson = analyzeCourseJson(parsed);
+          modules = analyzedJson.modules;
+          setJsonAnalysis({
+            moduleCount: analyzedJson.moduleCount,
+            topicCount: analyzedJson.topicCount,
+            subtopicCount: analyzedJson.subtopicCount,
+          });
         } catch (jsonErr) {
           addToast("Invalid JSON format for course content.", "error");
           return;
         }
       }
 
+      const fallbackTitle = analyzedJson?.title || "";
+      const fallbackDescription = analyzedJson?.description || "";
+      const resolvedTitle = (newCourse.title || fallbackTitle).trim();
+      const resolvedDescription = (newCourse.description || fallbackDescription).trim();
+
+      if (!resolvedTitle || !resolvedDescription) {
+        addToast("Course title and description are required.", "error");
+        return;
+      }
+
       const payload = {
         ...newCourse,
+        title: resolvedTitle,
+        description: resolvedDescription,
         duration: Number(newCourse.duration),
         price: Number(newCourse.price),
         isPaid: newCourse.isPaid && Number(newCourse.price) > 0,
         paymentMethods: newCourse.isPaid && Number(newCourse.price) > 0 ? newCourse.paymentMethods : [],
-        modules: modules
+        modules: modules.map(mod => ({
+          ...mod,
+          topics: (mod.topics || []).map(topic => ({
+            ...topic,
+            videoUrl: topicVideos[topic.title] || topic.videoUrl || ""
+          }))
+        })),
       };
 
       if (editingCourseId) {
@@ -180,6 +407,8 @@ export default function AdminPage() {
       paymentMethods: [],
     });
     setCourseJson("");
+    setJsonAnalysis(null);
+    setTopicVideos({});
   };
 
   const handleEditCourse = (course) => {
@@ -194,7 +423,36 @@ export default function AdminPage() {
       isPaid: course.isPaid || false,
       paymentMethods: course.paymentMethods || [],
     });
-    setCourseJson(course.modules ? JSON.stringify(course.modules, null, 2) : "");
+    const modules = Array.isArray(course.modules) ? course.modules : [];
+    setCourseJson(modules.length > 0 ? JSON.stringify(modules, null, 2) : "");
+    if (modules.length > 0) {
+      const topicCount = modules.reduce((sum, moduleValue) => sum + (moduleValue.topics?.length || 0), 0);
+      const subtopicCount = modules.reduce(
+        (sum, moduleValue) =>
+          sum +
+          (moduleValue.topics || []).reduce(
+            (topicSum, topicValue) => topicSum + (topicValue.subtopics?.length || 0),
+            0
+          ),
+        0
+      );
+      
+      const extractedVideos = {};
+      modules.forEach(mod => {
+        (mod.topics || []).forEach(t => {
+          extractedVideos[t.title] = t.videoUrl || "";
+        });
+      });
+      setTopicVideos(extractedVideos);
+
+      setJsonAnalysis({
+        moduleCount: modules.length,
+        topicCount,
+        subtopicCount,
+      });
+    } else {
+      setJsonAnalysis(null);
+    }
     window.scrollTo({ top: document.getElementById('course-form').offsetTop - 100, behavior: 'smooth' });
   };
 
@@ -216,24 +474,59 @@ export default function AdminPage() {
     reader.onload = (event) => {
       try {
         const content = event.target.result;
-        // Validate JSON
         const parsed = JSON.parse(content);
-        setCourseJson(JSON.stringify(parsed, null, 2));
-        addToast("JSON file loaded successfully.", "info");
+        const analyzedJson = analyzeCourseJson(parsed);
 
-        // Try to auto-populate title/description if they are empty
-        if (parsed.course_title) {
-          setNewCourse(prev => ({ ...prev, title: parsed.course_title }));
-        }
-        if (parsed.description) {
-          setNewCourse(prev => ({ ...prev, description: parsed.description }));
-        }
-        if (parsed.course_title && !newCourse.slug) {
-          const generatedSlug = parsed.course_title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-          setNewCourse(prev => ({ ...prev, slug: generatedSlug }));
+        setCourseJson(JSON.stringify(parsed, null, 2));
+        setJsonAnalysis({
+          moduleCount: analyzedJson.moduleCount,
+          topicCount: analyzedJson.topicCount,
+          subtopicCount: analyzedJson.subtopicCount,
+        });
+
+        const derivedTitle = analyzedJson.title || "";
+        const derivedDescription = analyzedJson.description || "";
+
+        setNewCourse((prev) => {
+          const next = { ...prev };
+
+          if (!next.title && derivedTitle) {
+            next.title = derivedTitle;
+          }
+
+          if (!next.description && derivedDescription) {
+            next.description = derivedDescription;
+          }
+
+          if (!next.slug && derivedTitle) {
+            next.slug = derivedTitle
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/^-+|-+$/g, "");
+          }
+
+          return next;
+        });
+
+        if (analyzedJson.topicCount > 0) {
+          const extractedVideos = {};
+          analyzedJson.modules.forEach(mod => {
+            (mod.topics || []).forEach(t => {
+              extractedVideos[t.title] = t.videoUrl || "";
+            });
+          });
+          setTopicVideos(extractedVideos);
+
+          addToast(
+            `JSON analyzed: extracted ${analyzedJson.topicCount} topics from ${analyzedJson.moduleCount} module(s).`,
+            "success"
+          );
+        } else {
+          addToast("JSON loaded, but no topics were detected. You can still edit/paste content manually.", "info");
         }
       } catch (err) {
         addToast("Failed to parse JSON file.", "error");
+        setJsonAnalysis(null);
       }
     };
     reader.readAsText(file);
@@ -426,14 +719,74 @@ export default function AdminPage() {
                   style={{ fontSize: "0.8rem", flex: 1 }}
                 />
               </div>
+              {jsonAnalysis && (
+                <div
+                  style={{
+                    marginBottom: "0.6rem",
+                    padding: "0.6rem 0.75rem",
+                    borderRadius: "var(--radius-sm)",
+                    background: "var(--color-surface-alt)",
+                    border: "1px solid var(--color-border)",
+                    fontSize: "0.82rem",
+                    color: "var(--color-text-secondary)",
+                  }}
+                >
+                  Extracted {jsonAnalysis.moduleCount} module(s), {jsonAnalysis.topicCount} topic(s), and {jsonAnalysis.subtopicCount} subtopic(s).
+                </div>
+              )}
               <textarea 
                 placeholder='Paste course JSON here... { "course_title": "...", "modules": [...] }' 
                 value={courseJson} 
-                onChange={(e) => setCourseJson(e.target.value)} 
+                onChange={(e) => {
+                  setCourseJson(e.target.value);
+                  setJsonAnalysis(null);
+                  try {
+                    const parsed = JSON.parse(e.target.value);
+                    const analyzed = analyzeCourseJson(parsed);
+                    setJsonAnalysis({
+                      moduleCount: analyzed.moduleCount,
+                      topicCount: analyzed.topicCount,
+                      subtopicCount: analyzed.subtopicCount,
+                    });
+                    const extractedVideos = {};
+                    analyzed.modules.forEach(mod => {
+                      (mod.topics || []).forEach(t => {
+                        extractedVideos[t.title] = t.videoUrl || "";
+                      });
+                    });
+                    setTopicVideos(extractedVideos);
+                  } catch (err) {
+                    // Silently fail analysis if JSON is incomplete/invalid while typing
+                  }
+                }} 
                 rows="8"
                 style={{ fontSize: "0.85rem", fontFamily: "monospace" }}
               />
             </div>
+
+            {jsonAnalysis && Object.keys(topicVideos).length > 0 && (
+              <div style={{ marginTop: "1rem" }}>
+                <div style={{ fontSize: "0.85rem", fontWeight: 600, marginBottom: "0.6rem" }}>Topic Video URLs</div>
+                <div className="card" style={{ padding: "1rem", background: "var(--color-surface-alt)", display: "grid", gap: "0.75rem" }}>
+                  {Object.keys(topicVideos).map((title) => (
+                    <div key={title} style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "1rem", alignItems: "center" }}>
+                      <div style={{ fontSize: "0.82rem", fontWeight: 500, color: "var(--color-text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={title}>
+                        {title}
+                      </div>
+                      <input 
+                        placeholder="Paste YouTube/Vimeo URL here..." 
+                        value={topicVideos[title]} 
+                        onChange={(e) => setTopicVideos(prev => ({ ...prev, [title]: e.target.value }))}
+                        style={{ padding: "0.4rem 0.6rem", fontSize: "0.8rem" }}
+                      />
+                    </div>
+                  ))}
+                </div>
+                <p style={{ fontSize: "0.75rem", color: "var(--color-text-light)", marginTop: "0.5rem" }}>
+                  These URLs will be saved automatically when you create/update the course.
+                </p>
+              </div>
+            )}
 
             <div style={{ display: "flex", gap: "1rem", marginTop: "0.5rem" }}>
               <button className="btn btn-primary" type="submit" style={{ flex: 1 }}>

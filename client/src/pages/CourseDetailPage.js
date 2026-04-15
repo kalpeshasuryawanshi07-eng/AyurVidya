@@ -49,12 +49,6 @@ export default function CourseDetailPage() {
         setLoading(true);
         setError("");
         const data = await getCourseBySlug(courseSlug);
-        console.log('Course data received:', data);
-        console.log('Course object:', data.course);
-        console.log('Modules:', data.course?.modules);
-        console.log('Modules length:', data.course?.modules?.length);
-        console.log('Lessons:', data.course?.lessons);
-        console.log('Lessons length:', data.course?.lessons?.length);
         setCourse(data.course || null);
       } catch (err) {
         if (err.response?.status === 404) {

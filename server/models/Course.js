@@ -108,6 +108,10 @@ const topicSchema = new mongoose.Schema({
   summary: {
     type: String,
     trim: true
+  },
+  videoUrl: {
+    type: String,
+    trim: true
   }
 }, { _id: false });
 
@@ -268,15 +272,15 @@ courseSchema.pre('validate', function setPaymentMethods(next) {
 
 // Calculate metadata before saving
 courseSchema.pre('save', function calculateMetadata(next) {
-  // Update total modules count first
-  if (this.modules) {
+  // Update total modules count if modules are provided
+  if (Array.isArray(this.modules) && this.modules.length > 0) {
     this.totalModules = this.modules.length;
   }
 
   // Calculate lessons count
   if (Array.isArray(this.lessons) && this.lessons.length > 0) {
     this.totalLessons = this.lessons.length;
-  } else if (Array.isArray(this.modules)) {
+  } else if (Array.isArray(this.modules) && this.modules.length > 0) {
     // Count topics within modules as lessons
     let count = 0;
     this.modules.forEach(mod => {
@@ -284,9 +288,10 @@ courseSchema.pre('save', function calculateMetadata(next) {
         count += mod.topics.length;
       }
     });
-    this.totalLessons = count;
-  } else {
-    this.totalLessons = 0;
+    // Only update if we actually found topics, otherwise keep manual value
+    if (count > 0) {
+      this.totalLessons = count;
+    }
   }
 
   next();

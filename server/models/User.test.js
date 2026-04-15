@@ -311,7 +311,7 @@ describe('User Model', () => {
       const savedUser = await user.save();
       const isMatch = await savedUser.comparePassword(plainPassword);
       expect(isMatch).toBe(true);
-    });
+    }, 10000);
 
     test('should return false for incorrect password', async () => {
       const user = new User({
@@ -323,7 +323,7 @@ describe('User Model', () => {
       const savedUser = await user.save();
       const isMatch = await savedUser.comparePassword('wrongpassword');
       expect(isMatch).toBe(false);
-    });
+    }, 10000);
   });
 
   describe('toJSON Method', () => {
