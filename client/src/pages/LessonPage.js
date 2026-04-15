@@ -48,16 +48,47 @@ export default function LessonPage() {
    * Transforms structured topic data into formatted markdown-like content
    */
   const formatTopicContent = (topic) => {
-    // User requested to display ONLY the summary
-    if (topic.summary) {
-      return topic.summary;
+    let content = "";
+    if (topic.definition) content += `${topic.definition}\n\n`;
+    if (topic.description) content += `${topic.description}\n\n`;
+    
+    if (Array.isArray(topic.key_points) && topic.key_points.length > 0) {
+      content += `## Key Points\n\n`;
+      topic.key_points.forEach(point => {
+        content += `- ${point}\n`;
+      });
+      content += `\n`;
     }
-    
-    // Fallback if summary is missing
-    if (topic.description) return topic.description;
-    if (topic.definition) return topic.definition;
-    
-    return "No content available.";
+
+    if (Array.isArray(topic.subtopics) && topic.subtopics.length > 0) {
+      topic.subtopics.forEach(st => {
+        if (st.title) content += `### ${st.title}\n\n`;
+        if (st.content) content += `${st.content}\n\n`;
+        
+        if (Array.isArray(st.examples) && st.examples.length > 0) {
+          content += `### Examples\n\n`;
+          st.examples.forEach(ex => content += `- ${ex}\n`);
+          content += `\n`;
+        }
+        
+        if (Array.isArray(st.applications) && st.applications.length > 0) {
+          content += `### Applications\n\n`;
+          st.applications.forEach(app => content += `- ${app}\n`);
+          content += `\n`;
+        }
+
+        if (Array.isArray(st.important_notes) && st.important_notes.length > 0) {
+          st.important_notes.forEach(note => content += `> ${note}\n`);
+          content += `\n`;
+        }
+      });
+    }
+
+    if (topic.summary) {
+      content += `--- \n## Summary\n\n${topic.summary}`;
+    }
+
+    return content;
   };
 
   /**
