@@ -273,11 +273,14 @@ export default function LessonPage() {
         <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}>
           <div className={styles.sidebarHeader}>
             <h2 className={styles.sidebarTitle}>{course?.title}</h2>
-            <div className="progress-bar-wrap">
-              <div className="progress-bar-fill" style={{ width: `${progress?.progress || 0}%` }} />
-            </div>
-            <div className="text-muted mt-1">
-              {progress?.progress || 0}% complete • {completedLessons.length}/{lessons.length} topics
+            <div className={styles.sidebarProgress}>
+              <div className="progress-bar-wrap" style={{ height: "6px", background: "rgba(255,255,255,0.1)" }}>
+                <div className="progress-bar-fill" style={{ width: `${progress?.progress || 0}%`, background: "var(--color-primary)" }} />
+              </div>
+              <div className={styles.sidebarProgressInfo}>
+                <span>{progress?.progress || 0}% COMPLETE</span>
+                <span>{completedLessons.length}/{lessons.length} TOPICS</span>
+              </div>
             </div>
           </div>
           
@@ -390,8 +393,8 @@ export default function LessonPage() {
             <footer className={styles.actionFooter}>
                <div className="flex flex-gap-md">
                   {currentLesson > 0 && (
-                     <button className="btn btn-outline" onClick={() => setCurrentLesson(c => c - 1)}>
-                        ← Previous Topic
+                     <button className="btn btn-outline" onClick={() => setCurrentLesson(c => c - 1)} style={{ padding: "0.75rem 1.5rem" }}>
+                        ← {lessons[currentLesson - 1]?.title.substring(0, 20)}...
                      </button>
                   )}
                </div>
@@ -401,6 +404,7 @@ export default function LessonPage() {
                     className="btn btn-primary" 
                     onClick={handleMarkComplete}
                     disabled={markingComplete}
+                    style={{ padding: "0.85rem 2.5rem", borderRadius: "var(--radius-pill)", boxShadow: "0 10px 20px rgba(16, 185, 129, 0.2)" }}
                   >
                     {markingComplete ? "Saving..." : "Mark as Complete ✓"}
                   </button>
@@ -408,8 +412,8 @@ export default function LessonPage() {
 
                <div className="flex flex-gap-md" style={{ justifyContent: 'flex-end' }}>
                   {currentLesson < lessons.length - 1 && (
-                     <button className="btn btn-accent" onClick={() => setCurrentLesson(c => c + 1)}>
-                        Next Topic →
+                     <button className="btn btn-accent" onClick={() => setCurrentLesson(c => c + 1)} style={{ padding: "0.75rem 1.5rem" }}>
+                        {lessons[currentLesson + 1]?.title.substring(0, 20)}... →
                      </button>
                   )}
                </div>

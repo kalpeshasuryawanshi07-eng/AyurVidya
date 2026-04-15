@@ -1,98 +1,189 @@
 .header {
-  background: linear-gradient(135deg, #1B4332, #2D6A4F);
-  padding: 3rem 0;
+  background: radial-gradient(circle at top left, var(--color-primary-dark), #064e3b, #022c22);
+  padding: 5rem 0 4rem;
   color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.header::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(16, 185, 129, 0.1), transparent 70%);
+  pointer-events: none;
 }
 
 .headerGrid {
   display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 2rem;
-  margin-top: 1.5rem;
+  grid-template-columns: 1fr 360px;
+  gap: 3rem;
+  margin-top: 2rem;
   align-items: start;
+  position: relative;
+  z-index: 1;
 }
 
 .headerInfo h1 {
   color: #fff;
-  margin-bottom: 0.75rem;
-  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 3.2rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.headerInfo p {
+  font-size: 1.15rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
+  max-width: 700px;
+  margin-bottom: 2rem;
 }
 
 .headerMeta {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
   flex-wrap: wrap;
-  font-size: 0.875rem;
-  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.headerMeta span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .sidebar {
-  background: var(--color-surface-card);
-  border-radius: var(--radius-md);
-  padding: 1.5rem;
-  box-shadow: var(--shadow-lg);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   position: sticky;
   top: 100px;
+  color: #fff;
+}
+
+body.light .sidebar {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  color: var(--color-text-primary);
 }
 
 .price {
-  font-size: 1.75rem;
-  font-weight: 700;
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+body.light .price {
   color: var(--color-primary);
-  margin-bottom: 1rem;
 }
 
 .curriculumSection {
-  padding: 3rem 0;
+  padding: 5rem 0;
+  background-color: var(--color-surface);
 }
 
 .moduleBox {
+  background: var(--color-surface-card);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  margin-bottom: 0.75rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 1rem;
   overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.moduleBox:hover {
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-md);
 }
 
 .moduleButton {
   width: 100%;
-  padding: 1rem 1.25rem;
-  background: var(--color-surface-card);
+  padding: 1.5rem;
+  background: transparent;
   border: none;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
   color: var(--color-text-primary);
+  transition: background 0.2s ease;
+}
+
+.moduleButton:hover {
+  background: var(--color-surface-alt);
 }
 
 .lessonRow {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1.25rem;
-  border-bottom: 1px solid var(--color-border);
-  font-size: 0.875rem;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem 1.25rem 4rem;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.95rem;
   color: var(--color-text-secondary);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.lessonRow::before {
+  content: "📖";
+  position: absolute;
+  left: 1.5rem;
+  font-size: 1rem;
+  opacity: 0.5;
+}
+
+.lessonRow:hover {
+  background: var(--color-surface-alt);
+  color: var(--color-primary);
 }
 
 @media (max-width: 992px) {
   .headerGrid {
     grid-template-columns: 1fr;
+    gap: 2rem;
   }
   .sidebar {
     position: static;
-    margin-top: 2rem;
+    margin-top: 1rem;
+    max-width: 450px;
+  }
+  .headerInfo h1 {
+    font-size: 2.5rem;
   }
 }
 
 @media (max-width: 480px) {
-  .header h1 {
-    font-size: 1.85rem;
+  .header {
+    padding: 3rem 0;
   }
-  .sectionCard {
-    padding: 1.25rem;
+  .headerInfo h1 {
+    font-size: 2rem;
+  }
+  .lessonRow {
+    padding-left: 3rem;
+  }
+  .lessonRow::before {
+    left: 1rem;
   }
 }

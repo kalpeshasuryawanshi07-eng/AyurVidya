@@ -261,15 +261,16 @@ export default function CourseDetailPage() {
                 <h1>{course.title}</h1>
                 <p>{course.description}</p>
                 <div className={styles.headerMeta}>
-                  <span>{t("courses.level")}: {
+                  <span>🎓 {
                     course.level === '1st Year' || course.level === 'beginner' ? t("topic.beginner") :
                     course.level === '2nd Year' || course.level === 'intermediate' ? t("topic.intermediate") :
                     course.level === '3rd Year' || course.level === 'advanced' ? t("topic.advanced") :
                     course.level || t("topic.beginner")
                   }</span>
-                  <span>Duration: {course.duration ? `${course.duration} hrs` : "Self-paced"}</span>
-                  <span>Students: {(course.enrollmentCount || 0).toLocaleString()}</span>
-                  <span>Rating: {course.rating || 0}</span>
+                  <span>⏱️ {course.duration ? `${course.duration} hrs` : "Self-paced"}</span>
+                  <span>👥 {(course.enrollmentCount || 0).toLocaleString()} Students</span>
+                  <span>⭐ {course.rating || 4.8}</span>
+
                 </div>
               </div>
               <div className={styles.sidebar}>
@@ -330,11 +331,30 @@ export default function CourseDetailPage() {
                     {enrolling ? "Processing..." : !course.isPaid || (course.price || 0) === 0 ? "Enroll Free" : "Enroll Now"}
                   </button>
                 )}
-                
+                             <div style={{ marginTop: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "1.5rem" }}>
+                  <div style={{ fontSize: "0.9rem", fontWeight: 700, marginBottom: "1rem", color: "rgba(255,255,255,0.9)" }}>
+                    Course Includes:
+                  </div>
+                  <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: "0.85rem", display: "flex", flexDirection: "column", gap: "0.75rem", color: "rgba(255,255,255,0.7)" }}>
+                    <li style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                      <span>📱</span> Access on mobile and TV
+                    </li>
+                    <li style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                      <span>♾️</span> Full lifetime access
+                    </li>
+                    <li style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                      <span>🏆</span> Certificate of completion
+                    </li>
+                    <li style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                      <span>📑</span> Comprehensive study material
+                    </li>
+                  </ul>
+                </div>
+
                 {!isEnrolled && course.isPaid && (course.price || 0) > 0 && availablePaymentMethods.length > 0 && (
-                  <div style={{ marginTop: "0.9rem" }}>
-                    <div style={{ fontSize: "0.8rem", color: "var(--color-text-light)", marginBottom: "0.45rem", fontWeight: 600 }}>
-                      Choose Payment Method
+                  <div style={{ marginTop: "1.5rem" }}>
+                    <div style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.6)", marginBottom: "0.75rem", fontWeight: 600 }}>
+                      Secure Payment via Razorpay
                     </div>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
                       {availablePaymentMethods.map((method) => {
@@ -345,15 +365,14 @@ export default function CourseDetailPage() {
                             type="button"
                             onClick={() => setSelectedPaymentMethod(method)}
                             style={{
-                              border: isSelected ? "1px solid var(--color-primary)" : "1px solid var(--color-border)",
-                              background: isSelected ? "var(--color-primary)" : "var(--color-surface-alt)",
-                              color: isSelected ? "#fff" : "var(--color-text-secondary)",
+                              border: isSelected ? "1px solid var(--color-primary-light)" : "1px solid rgba(255,255,255,0.1)",
+                              background: isSelected ? "var(--color-primary)" : "rgba(255,255,255,0.05)",
+                              color: "#fff",
                               borderRadius: "var(--radius-pill)",
-                              padding: "0.35rem 0.7rem",
-                              fontSize: "0.75rem",
+                              padding: "0.4rem 0.8rem",
+                              fontSize: "0.7rem",
                               fontWeight: 600,
                               cursor: "pointer",
-                              fontFamily: "var(--font-body)",
                             }}
                           >
                             {PAYMENT_METHOD_LABELS[method] || method}
@@ -363,11 +382,6 @@ export default function CourseDetailPage() {
                     </div>
                   </div>
                 )}
-                <div style={{ marginTop: "1rem", fontSize: "0.8rem", color: "var(--color-text-light)", textAlign: "center" }}>
-                  {!course.isPaid || (course.price || 0) === 0
-                    ? "No payment required"
-                    : `Secure payment via Razorpay${selectedPaymentMethod ? ` (${PAYMENT_METHOD_LABELS[selectedPaymentMethod] || selectedPaymentMethod})` : ""}`}
-                </div>
               </div>
             </div>
           </div>
