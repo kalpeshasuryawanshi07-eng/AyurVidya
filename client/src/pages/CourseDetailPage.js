@@ -256,23 +256,35 @@ export default function CourseDetailPage() {
               <span className="breadcrumb-sep">/</span>
               <span style={{ color: "#fff" }}>{course.title}</span>
             </div>
-            <div className={styles.headerGrid}>
-              <div className={styles.headerInfo}>
-                <h1>{course.title}</h1>
-                <p>{course.description}</p>
-                <div className={styles.headerMeta}>
-                  <span>🎓 {
-                    course.level === '1st Year' || course.level === 'beginner' ? t("topic.beginner") :
-                    course.level === '2nd Year' || course.level === 'intermediate' ? t("topic.intermediate") :
-                    course.level === '3rd Year' || course.level === 'advanced' ? t("topic.advanced") :
-                    course.level || t("topic.beginner")
-                  }</span>
-                  <span>⏱️ {course.duration ? `${course.duration} hrs` : "Self-paced"}</span>
-                  <span>👥 {(course.enrollmentCount || 0).toLocaleString()} Students</span>
-                  <span>⭐ {course.rating || 4.8}</span>
 
+            <div className={styles.headerGrid}>
+              <div className={styles.headerHero}>
+                <div className={styles.thumbnailWrap}>
+                  {course.thumbnail ? (
+                    <img src={course.thumbnail} alt={course.title} />
+                  ) : (
+                    <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(255,255,255,0.05)", fontSize: "4rem" }}>
+                      🌿
+                    </div>
+                  )}
+                </div>
+                <div className={styles.headerInfo}>
+                  <h1>{course.title}</h1>
+                  <p>{course.description}</p>
+                  <div className={styles.headerMeta}>
+                    <span>🎓 {
+                      course.level === '1st Year' || course.level === 'beginner' ? t("topic.beginner") :
+                      course.level === '2nd Year' || course.level === 'intermediate' ? t("topic.intermediate") :
+                      course.level === '3rd Year' || course.level === 'advanced' ? t("topic.advanced") :
+                      course.level || t("topic.beginner")
+                    }</span>
+                    <span>⏱️ {course.duration ? `${course.duration} hrs` : "Self-paced"}</span>
+                    <span>👥 {(course.enrollmentCount || 0).toLocaleString()} Students</span>
+                    <span>⭐ {course.rating || 4.8}</span>
+                  </div>
                 </div>
               </div>
+
               <div className={styles.sidebar}>
                 <div className={styles.price}>
                   {!course.isPaid || (course.price || 0) === 0 ? "Free" : `INR ${course.price}`}
@@ -331,7 +343,8 @@ export default function CourseDetailPage() {
                     {enrolling ? "Processing..." : !course.isPaid || (course.price || 0) === 0 ? "Enroll Free" : "Enroll Now"}
                   </button>
                 )}
-                             <div style={{ marginTop: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "1.5rem" }}>
+                
+                <div style={{ marginTop: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "1.5rem" }}>
                   <div style={{ fontSize: "0.9rem", fontWeight: 700, marginBottom: "1rem", color: "rgba(255,255,255,0.9)" }}>
                     Course Includes:
                   </div>
@@ -409,7 +422,7 @@ export default function CourseDetailPage() {
               {openModule === index && (
                 <div style={{ borderTop: "1px solid var(--color-border)" }}>
                   {(module.topics || []).map((topic, tIdx) => (
-                    <div key={tIdx} className={styles.lessonRow} style={{ paddingLeft: "2.5rem" }}>
+                    <div key={tIdx} className={styles.lessonRow} style={{ paddingLeft: "1.5rem" }}>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontWeight: 600 }}>{topic.title}</div>
                         {topic.description && (
