@@ -371,18 +371,25 @@ export default function LessonPage() {
             </div>
             
             {currentLessonData?.videoUrl && (
-              <div className={styles.videoSection} style={{ marginTop: "2rem" }}>
-                <h3 style={{ marginBottom: "1rem" }}>Educational Video</h3>
-                <div className={styles.videoContainer}>
-                  <iframe
-                    src={getEmbedUrl(currentLessonData.videoUrl)}
-                    title="Lesson Video"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    className={styles.videoIframe}
-                  ></iframe>
+              <div style={{ marginTop: "4rem", paddingTop: "3rem", borderTop: "1px solid var(--color-border)" }}>
+                <div className={styles.videoLabel}>
+                  <i>▶</i> <b>Educational Video Tutorial</b>
                 </div>
+                <div className={styles.videoSection}>
+                  <div className={styles.videoContainer}>
+                    <iframe
+                      src={getEmbedUrl(currentLessonData.videoUrl)}
+                      title="Lesson Video"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className={styles.videoIframe}
+                    ></iframe>
+                  </div>
+                </div>
+                <p style={{ marginTop: "1rem", fontSize: "0.85rem", color: "var(--color-text-light)", textAlign: "center" }}>
+                  Visual explanation of <strong>{currentLessonData.title}</strong>
+                </p>
               </div>
             )}
             

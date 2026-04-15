@@ -336,8 +336,14 @@ export default function TopicPage() {
           </section>
 
           {topic.videoUrl && (
-            <section id="video" className={styles.section}>
-              <h2 className="section-heading">Educational Video</h2>
+            <section id="video" className={styles.videoWrapper}>
+              <div className={styles.videoHeader}>
+                <div className={styles.videoIcon}>▶</div>
+                <div>
+                  <h3>Educational Video</h3>
+                  <p>Watch this detailed explanation of {topic.title}</p>
+                </div>
+              </div>
               <div className={styles.videoSection}>
                 <div className={styles.videoContainer}>
                   <iframe
