@@ -85,7 +85,7 @@ export default function LessonPage() {
     }
 
     if (topic.summary) {
-      content += `--- \n## Summary\n\n${topic.summary}`;
+      content += `## Summary\n\n${topic.summary}`;
     }
 
     return content;
