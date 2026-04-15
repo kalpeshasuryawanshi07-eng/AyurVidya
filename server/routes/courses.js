@@ -49,8 +49,8 @@ router.get(
       .withMessage('Language must be either "en" or "mr"'),
     query('level')
       .optional()
-      .isIn(['beginner', 'intermediate', 'advanced'])
-      .withMessage('Level must be beginner, intermediate, or advanced'),
+      .isIn(['beginner', 'intermediate', 'advanced', '1st Year', '2nd Year', '3rd Year', '4th Year'])
+      .withMessage('Level must be a valid academic year or skill level'),
     query('tag')
       .optional()
       .isString()

@@ -53,13 +53,26 @@ export default function CoursesPage() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedLevel, setSelectedLevel] = useState("all");
+
+  const filterOptions = [
+    { label: "All Years", value: "all" },
+    { label: "Year 1", value: "1st Year" },
+    { label: "Year 2", value: "2nd Year" },
+    { label: "Year 3", value: "3rd Year" },
+    { label: "Year 4", value: "4th Year" },
+  ];
 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         setLoading(true);
         setError("");
-        const data = await getCourses({ lang });
+        const params = { lang };
+        if (selectedLevel !== "all") {
+          params.level = selectedLevel;
+        }
+        const data = await getCourses(params);
         setCourses(data.courses || []);
       } catch (err) {
         setError(err.response?.data?.message || "Failed to load courses.");
@@ -69,7 +82,7 @@ export default function CoursesPage() {
     };
 
     fetchCourses();
-  }, [lang]);
+  }, [lang, selectedLevel]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -79,6 +92,22 @@ export default function CoursesPage() {
           <div className="container">
             <h1>{t("courses.title")}</h1>
             <p>{t("courses.subtitle")}</p>
+          </div>
+        </div>
+
+        <div className={styles.filterBar}>
+          <div className="container">
+            <div className={styles.filterList}>
+              {filterOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  className={`${styles.filterBtn} ${selectedLevel === opt.value ? styles.active : ""}`}
+                  onClick={() => setSelectedLevel(opt.value)}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
         <div className="container" style={{ padding: "2rem 1.5rem" }}>
