@@ -100,7 +100,8 @@
   background-color: var(--color-surface);
   scroll-behavior: smooth;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 .contentWrapper {
