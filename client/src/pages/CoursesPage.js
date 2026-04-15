@@ -54,14 +54,14 @@ export default function CoursesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const levelWeight = {
-    '1st Year': 1, 'beginner': 1,
-    '2nd Year': 2, 'intermediate': 2,
-    '3rd Year': 3, 'advanced': 3,
-    '4th Year': 4
-  };
-
   useEffect(() => {
+    const levelWeight = {
+      '1st Year': 1, 'beginner': 1,
+      '2nd Year': 2, 'intermediate': 2,
+      '3rd Year': 3, 'advanced': 3,
+      '4th Year': 4
+    };
+
     const fetchCourses = async () => {
       try {
         setLoading(true);
