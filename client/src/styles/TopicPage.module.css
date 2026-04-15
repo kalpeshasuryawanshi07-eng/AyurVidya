@@ -5,7 +5,7 @@
   background: var(--color-surface);
 }
 .sidebar  { grid-column: 1; }
-.content  { grid-column: 2; padding: 2rem 2.5rem; max-width: 800px; }
+.content  { grid-column: 2; padding: 2rem 2.5rem; max-width: 950px; }
 .toc      { grid-column: 3; }
 
 .topicHeader { margin-bottom: 2rem; }
