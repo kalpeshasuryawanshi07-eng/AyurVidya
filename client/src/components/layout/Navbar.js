@@ -137,20 +137,31 @@ export default function Navbar() {
             <NavLink to="/herbs" onClick={() => setMobileMenuOpen(false)}>{t("nav.herbs")}</NavLink>
             <NavLink to="/courses" onClick={() => setMobileMenuOpen(false)}>{t("nav.courses")}</NavLink>
             <NavLink to="/prakriti-quiz" onClick={() => setMobileMenuOpen(false)}>{t("nav.prakriti")}</NavLink>
-            {user && <NavLink to="/dashboard" onClick={() => setMobileMenuOpen(false)}>{t("nav.dashboard")}</NavLink>}
-            {user && <NavLink to="/my-courses" onClick={() => setMobileMenuOpen(false)}>{t("nav.myCourses")}</NavLink>}
-            {isAdmin && <NavLink to="/admin" onClick={() => setMobileMenuOpen(false)}>{t("nav.admin")}</NavLink>}
-            {user ? (
-              <button
-                onClick={handleLogout}
-                style={{ textAlign: "left", padding: "0.75rem 1.5rem", color: "var(--color-error)" }}
-              >
-                {t("nav.logout")}
-              </button>
-            ) : (
-              <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="btn btn-primary" style={{ margin: "0.5rem 1.5rem" }}>
-                {t("nav.login")}
-              </Link>
+            
+            {user && (
+              <>
+                <hr className="divider" style={{ margin: "0.5rem 1.5rem", opacity: 0.2 }} />
+                <div style={{ padding: "0.5rem 1.5rem", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--color-primary)", fontWeight: 700 }}>
+                  {t("nav.account")}
+                </div>
+                <NavLink to="/dashboard" onClick={() => setMobileMenuOpen(false)}>📊 {t("nav.dashboard")}</NavLink>
+                <NavLink to="/my-courses" onClick={() => setMobileMenuOpen(false)}>🎓 {t("nav.myCourses")}</NavLink>
+                {isAdmin && <NavLink to="/admin" onClick={() => setMobileMenuOpen(false)}>⚙️ {t("nav.admin")}</NavLink>}
+                <button
+                  onClick={handleLogout}
+                  style={{ textAlign: "left", padding: "0.75rem 1.5rem", color: "var(--color-error)", fontWeight: 600 }}
+                >
+                  🚪 {t("nav.logout")}
+                </button>
+              </>
+            )}
+
+            {!user && (
+              <div style={{ padding: "1rem 1.5rem" }}>
+                <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="btn btn-primary w-full">
+                  {t("nav.login")}
+                </Link>
+              </div>
             )}
           </div>
         )}
