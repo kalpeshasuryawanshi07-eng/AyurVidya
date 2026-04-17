@@ -1,6 +1,6 @@
 import axios from "axios";
 
-let BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+let BASE_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:5000/api";
 if (BASE_URL && !BASE_URL.endsWith('/api') && !BASE_URL.endsWith('/api/')) {
   BASE_URL = BASE_URL.endsWith('/') ? `${BASE_URL}api` : `${BASE_URL}/api`;
 }
@@ -95,6 +95,8 @@ export const getMyCourses = (params) => request(api.get("/courses/my", { params 
 export const enrollInCourse = (slug) => request(api.post(`/courses/${slug}/enroll`));
 export const markLessonComplete = (slug, lessonId) => request(api.post(`/courses/${slug}/lessons/${lessonId}/complete`));
 export const getCourseProgress = (slug) => request(api.get(`/courses/${slug}/progress`));
+export const getCourseFinalQuiz = (slug) => request(api.get(`/courses/${slug}/final-quiz`));
+export const submitCourseFinalQuiz = (slug, answers) => request(api.post(`/courses/${slug}/final-quiz/submit`, { answers }));
 
 // Payment
 export const createOrder = (courseId, paymentMethod) =>

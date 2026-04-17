@@ -24,6 +24,7 @@ const startServer = async () => {
     // CORS configuration - allow multiple origins
     const allowedOrigins = [
       'http://localhost:3000',
+      'http://127.0.0.1:3000',
       'https://ayur-vidya-3wbybo5v1-kalpeshasuryawanshi07-7026s-projects.vercel.app',
       'https://ayur-vidya-8iw0yfvlo-kalpeshasuryawanshi07-7026s-projects.vercel.app',
       config.corsOrigin // Also allow environment variable
@@ -93,7 +94,8 @@ const startServer = async () => {
 
     // Start server
     const PORT = config.port;
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`✓ Server is running on port ${PORT}`);
       console.log(`✓ CORS enabled for all Vercel deployments and configured origins`);
 
       // Initialize Cron Jobs

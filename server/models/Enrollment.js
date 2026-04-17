@@ -38,6 +38,18 @@ const enrollmentSchema = new mongoose.Schema({
   certificateGenerated: {
     type: Boolean,
     default: false
+  },
+  finalQuizScore: {
+    type: Number,
+    default: null
+  },
+  finalQuizPassed: {
+    type: Boolean,
+    default: false
+  },
+  finalQuizAttempts: {
+    type: Number,
+    default: 0
   }
 }, {
   timestamps: true

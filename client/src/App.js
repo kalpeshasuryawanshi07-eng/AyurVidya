@@ -23,6 +23,7 @@ import AboutPage        from "./pages/AboutPage";
 import CertificatesPage from "./pages/CertificatesPage";
 import ForgotPassword   from "./pages/ForgotPassword";
 import ResetPassword    from "./pages/ResetPassword";
+import FinalQuizPage    from "./pages/FinalQuizPage";
 import NotFoundPage     from "./pages/NotFoundPage";
 
 export default function App() {
@@ -44,6 +45,7 @@ export default function App() {
                 <Route path="/courses/:courseSlug"                 element={<CourseDetailPage />} />
                 <Route path="/my-courses"                          element={<MyCoursesPage />} />
                 <Route path="/courses/:courseSlug/learn"           element={<LessonPage />} />
+                <Route path="/courses/:slug/final-quiz"            element={<FinalQuizPage />} />
                 <Route path="/prakriti-quiz"                       element={<PrakritiQuizPage />} />
                 <Route path="/search"                              element={<SearchPage />} />
                 <Route path="/login"                               element={<LoginPage />} />

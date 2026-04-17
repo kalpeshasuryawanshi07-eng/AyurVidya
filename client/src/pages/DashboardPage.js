@@ -59,6 +59,7 @@ export default function DashboardPage() {
         setQuizStats(quizStatsResp.stats || null);
         setCertificates(certificatesResp.certificates || []);
       } catch (err) {
+        console.error("Dashboard Load Error details from catch:", err, "Response data:", err.response?.data);
         setError(err.response?.data?.message || "Failed to load dashboard data.");
       } finally {
         setPageLoading(false);

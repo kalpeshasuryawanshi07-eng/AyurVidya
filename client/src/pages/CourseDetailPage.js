@@ -328,16 +328,26 @@ export default function CourseDetailPage() {
                   </div>
                 )}
 
-                {/* Certificate button - show if course is completed */}
+                {/* Final Exam / Certificate button - show if course is completed */}
                 {isEnrolled && courseProgress?.progress === 100 ? (
-                  <button 
-                    className="btn btn-success w-full" 
-                    onClick={handleGenerateCertificate}
-                    disabled={generatingCert}
-                    style={{ marginBottom: "0.75rem" }}
-                  >
-                    {generatingCert ? "Generating..." : "🎓 Generate Certificate"}
-                  </button>
+                  !courseProgress.finalQuizPassed ? (
+                    <Link 
+                      to={`/courses/${courseSlug}/final-quiz`} 
+                      className="btn btn-success w-full"
+                      style={{ marginBottom: "0.75rem", display: "block", textAlign: "center", background: "#10b981" }}
+                    >
+                      📝 Take Final Exam
+                    </Link>
+                  ) : (
+                    <button 
+                      className="btn btn-success w-full" 
+                      onClick={handleGenerateCertificate}
+                      disabled={generatingCert}
+                      style={{ marginBottom: "0.75rem" }}
+                    >
+                      {generatingCert ? "Generating..." : "🎓 Generate Certificate"}
+                    </button>
+                  )
                 ) : null}
 
                 {/* Continue Learning or Enroll button */}

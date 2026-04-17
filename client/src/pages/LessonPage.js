@@ -204,15 +204,15 @@ export default function LessonPage() {
       addToast('✓ Lesson marked as complete!', 'success');
       
       if (result.isCompleted) {
-        addToast('🎉 Congratulations! Course completed!', 'success');
+        addToast('🎉 Congratulations! Course lessons completed!', 'success');
         setTimeout(() => {
-          if (window.confirm('Would you like to generate your certificate now?')) {
+          if (!result.finalQuizPassed) {
+            navigate(`/courses/${courseSlug}/final-quiz`);
+          } else if (window.confirm('Would you like to generate your certificate now?')) {
             handleGenerateCertificate();
           }
         }, 1000);
-      }
-      
-      if (currentLesson < lessons.length - 1) {
+      } else if (currentLesson < lessons.length - 1) {
         setTimeout(() => setCurrentLesson(c => c + 1), 500);
       }
     } catch (err) {

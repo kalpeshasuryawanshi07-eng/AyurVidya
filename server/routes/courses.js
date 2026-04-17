@@ -3,6 +3,7 @@ const { param, query, validationResult } = require('express-validator');
 const { authenticate } = require('../middleware/auth');
 const Course = require('../models/Course');
 const Enrollment = require('../models/Enrollment');
+const Topic = require('../models/Topic');
 const LanguageService = require('../services/LanguageService');
 
 const router = express.Router();
@@ -145,9 +146,11 @@ router.get(
         .sort({ enrolledAt: -1 });
 
       // Map enrollments to courses with progress
-      const enrolledCourses = enrollments.map(enrollment => {
-        const courseObj = enrollment.courseId.toObject();
-        const localizedCourse = LanguageService.selectContent(courseObj, lang);
+      const enrolledCourses = enrollments
+        .filter(enrollment => enrollment.courseId)
+        .map(enrollment => {
+          const courseObj = enrollment.courseId.toObject();
+          const localizedCourse = LanguageService.selectContent(courseObj, lang);
         
         return {
           ...localizedCourse,
@@ -462,7 +465,8 @@ router.post(
           progress: enrollment.progress,
           completedLessons: enrollment.completedLessons,
           isCompleted: enrollment.isCompleted,
-          completedAt: enrollment.completedAt
+          completedAt: enrollment.completedAt,
+          finalQuizPassed: enrollment.finalQuizPassed
         }
       });
     } catch (error) {
@@ -535,7 +539,9 @@ router.get(
             progress: 0,
             completedLessons: [],
             totalLessons: lessons.length,
-            lastAccessedAt: null
+            lastAccessedAt: null,
+            finalQuizPassed: false,
+            finalQuizScore: null
           }
         });
       }
@@ -553,7 +559,9 @@ router.get(
           progress: enrollment.progress,
           completedLessons: enrollment.completedLessons,
           totalLessons: lessons.length,
-          lastAccessedAt: enrollment.lastAccessedAt
+          lastAccessedAt: enrollment.lastAccessedAt,
+          finalQuizPassed: enrollment.finalQuizPassed,
+          finalQuizScore: enrollment.finalQuizScore
         }
       });
 
@@ -562,6 +570,204 @@ router.get(
         status: 'error',
         message: 'Failed to retrieve progress',
         errors: ['An unexpected error occurred']
+      });
+    }
+  }
+);
+
+/**
+ * GET /api/courses/:slug/final-quiz
+ * Generate 50 unique MCQ questions for the final test based on course modules, randomized per student
+ * Protected route
+ */
+router.get(
+  '/:slug/final-quiz',
+  authenticate,
+  [
+    param('slug')
+      .trim()
+      .notEmpty()
+      .withMessage('Slug is required')
+  ],
+  async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const userId = req.user.userId;
+
+      const course = await Course.findOne({ slug });
+      if (!course) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'Course not found',
+        });
+      }
+
+      const enrollment = await Enrollment.findOne({ userId, courseId: course._id });
+      if (!enrollment || enrollment.progress < 100) {
+        return res.status(403).json({
+          status: 'error',
+          message: 'You must complete the course before taking the final exam',
+        });
+      }
+
+      // Collect topics from modules and lessons
+      const topicSlugs = new Set();
+      const lessons = getVirtualLessons(course);
+      lessons.forEach(l => {
+        if (l.topicSlug) topicSlugs.add(l.topicSlug);
+      });
+
+      const topics = await Topic.find({ slug: { $in: Array.from(topicSlugs) } });
+      let allQuestions = [];
+
+      topics.forEach(t => {
+        if (t.quizQuestions && t.quizQuestions.length > 0) {
+          allQuestions.push(...t.quizQuestions);
+        }
+      });
+
+      // Fallback: If no direct topics were mapped via the lessons array,
+      // pull all available questions across the entire curriculum database to test global knowledge!
+      if (allQuestions.length === 0) {
+        const allTopics = await Topic.find({});
+        allTopics.forEach(t => {
+          if (t.quizQuestions && t.quizQuestions.length > 0) {
+            allQuestions.push(...t.quizQuestions);
+          }
+        });
+      }
+
+      // Randomize the questions pool (Fisher-Yates shuffle)
+      for (let i = allQuestions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [allQuestions[i], allQuestions[j]] = [allQuestions[j], allQuestions[i]];
+      }
+
+      // Select up to 50
+      const selectedQuestions = allQuestions.slice(0, 50).map(q => ({
+        questionId: q.questionId,
+        question: q.question,
+        questionMr: q.questionMr,
+        options: q.options,
+        optionsMr: q.optionsMr,
+      }));
+
+      res.status(200).json({
+        status: 'success',
+        message: 'Final exam questions generated',
+        data: {
+          questions: selectedQuestions,
+          totalAvailable: allQuestions.length
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Failed to generate final exam',
+      });
+    }
+  }
+);
+
+/**
+ * POST /api/courses/:slug/final-quiz/submit
+ * Evaluate student's quiz answers and record final score
+ * Protected route
+ */
+router.post(
+  '/:slug/final-quiz/submit',
+  authenticate,
+  [
+    param('slug').trim().notEmpty(),
+  ],
+  async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const userId = req.user.userId;
+      const { answers } = req.body; 
+
+      if (!Array.isArray(answers)) {
+        return res.status(400).json({ status: 'error', message: 'Answers array is required' });
+      }
+
+      const course = await Course.findOne({ slug });
+      if (!course) return res.status(404).json({ status: 'error', message: 'Course not found' });
+
+      let enrollment = await Enrollment.findOne({ userId, courseId: course._id });
+      if (!enrollment) return res.status(404).json({ status: 'error', message: 'Not enrolled' });
+
+      // Gather topics
+      const topicSlugs = new Set();
+      const lessons = getVirtualLessons(course);
+      lessons.forEach(l => {
+        if (l.topicSlug) topicSlugs.add(l.topicSlug);
+      });
+
+      const topics = await Topic.find({ slug: { $in: Array.from(topicSlugs) } });
+      const questionMap = new Map();
+      topics.forEach(t => {
+        if (t.quizQuestions) {
+          t.quizQuestions.forEach(q => questionMap.set(String(q.questionId), q));
+        }
+      });
+
+      // Fallback: Use global question banks if no specific topics existed
+      if (questionMap.size === 0) {
+        const allTopics = await Topic.find({});
+        allTopics.forEach(t => {
+          if (t.quizQuestions) {
+            t.quizQuestions.forEach(q => questionMap.set(String(q.questionId), q));
+          }
+        });
+      }
+
+      let correctCount = 0;
+      let totalCount = answers.length;
+
+      const results = answers.map(ans => {
+        const q = questionMap.get(String(ans.questionId));
+        const isCorrect = q && q.correctOption === ans.selectedOption;
+        if (isCorrect) correctCount++;
+        return {
+          questionId: ans.questionId,
+          isCorrect,
+          correctOption: q ? q.correctOption : null
+        };
+      });
+
+      const score = Math.round((correctCount / Math.max(1, totalCount)) * 100);
+      const passed = score >= 70;
+
+      enrollment.finalQuizAttempts = (enrollment.finalQuizAttempts || 0) + 1;
+
+      // Only save if it's their best score, or if they haven't passed yet
+      if (!enrollment.finalQuizPassed || score > (enrollment.finalQuizScore || 0)) {
+        enrollment.finalQuizScore = score;
+        if (passed) {
+          enrollment.finalQuizPassed = true;
+        }
+      }
+      
+      await enrollment.save();
+
+      res.status(200).json({
+        status: 'success',
+        message: 'Exam submitted successfully',
+        data: {
+          score,
+          passed,
+          correctCount,
+          totalCount,
+          results
+        }
+      });
+
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Failed to process final exam submission',
       });
     }
   }

@@ -57,6 +57,13 @@ class CertificateService {
       throw error;
     }
 
+    if (!enrollment.finalQuizPassed) {
+      const error = new Error('Final exam not passed. You must pass the final exam with at least 70% to earn a certificate.');
+      error.name = 'CourseQuizNotPassedError';
+      error.statusCode = 400;
+      throw error;
+    }
+
     return enrollment;
   }
 
@@ -90,7 +97,8 @@ class CertificateService {
     // Generate certificate details
     const certificateNumber = await this.generateCertificateNumber();
     const verificationCode = this.generateVerificationCode();
-    const grade = score ? this.calculateGrade(score) : 'Pass';
+    const finalScore = score || enrollment.finalQuizScore || enrollment.progress;
+    const grade = this.calculateGrade(finalScore);
 
     // Create certificate
     const certificate = new Certificate({
@@ -100,7 +108,7 @@ class CertificateService {
       verificationCode,
       completionDate: new Date(),
       grade,
-      score: score || enrollment.progress
+      score: finalScore
     });
 
     await certificate.save();
