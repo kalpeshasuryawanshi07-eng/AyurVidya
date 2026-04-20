@@ -183,9 +183,7 @@ export async function initiateCheckout(courseId, paymentMethod, onSuccess, onFai
       name: "AyurVidya",
       description: "Course Enrollment",
       order_id: data.razorpayOrderId,
-      prefill: {
-        method: data.paymentMethod, // Use method returned from server
-      },
+      prefill: {}, // Remove restriction to show all available methods
       handler: async (response) => {
         try {
           await verifyPayment({
