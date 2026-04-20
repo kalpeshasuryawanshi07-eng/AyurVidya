@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const PAYMENT_METHOD_VALUES = ['upi', 'card', 'netbanking', 'wallet', 'emi', 'paylater'];
-const DEFAULT_PAYMENT_METHODS = ['card', 'netbanking'];
+const DEFAULT_PAYMENT_METHODS = ['upi', 'card', 'netbanking'];
 
 const normalizePaymentMethods = (methods) => {
   if (!Array.isArray(methods)) return methods;

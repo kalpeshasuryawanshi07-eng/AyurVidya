@@ -191,13 +191,13 @@ export async function initiateCheckout(courseId, paymentMethod, userData, onSucc
         display: {
           blocks: {
             banks: {
-              name: "Card & Netbanking",
+              name: "Unified Payments Interface",
               instruments: [
                 {
-                  method: "card",
+                  method: "upi",
                 },
                 {
-                  method: "netbanking",
+                  method: "card",
                 },
               ],
             },
