@@ -49,6 +49,8 @@ const startServer = async () => {
         }
       },
       credentials: true,
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"]
     }));
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
@@ -95,26 +97,10 @@ const startServer = async () => {
     app.use('/api/search', searchRoutes);
     app.use('/api/certificates', certificatesRoutes);
 
-    // Serve static assets in production
-    const clientBuildPath = path.join(__dirname, '../client/build');
-    if (config.nodeEnv === 'production' && fs.existsSync(clientBuildPath)) {
-      app.use(express.static(clientBuildPath));
-      
-      app.get('*', (req, res) => {
-        res.sendFile(path.resolve(clientBuildPath, 'index.html'));
-      });
-      
-      console.log('✓ Serving static files from:', clientBuildPath);
-    } else {
-      // Fallback for API-only mode or when build folder is missing
-      app.get('/', (req, res) => {
-        res.json({ 
-          status: 'ok',
-          message: 'AyurVidya API is running',
-          version: '1.0.0'
-        });
-      });
-    }
+    // 404 handler for unknown routes (replaces static serving)
+    app.use((req, res) => {
+      res.status(404).json({ error: "Route not found" });
+    });
 
     // Error handling middleware (must be last)
     app.use(errorHandler);
