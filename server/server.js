@@ -44,8 +44,14 @@ const startServer = async () => {
         
         const lowerOrigin = origin.toLowerCase();
         
-        // Check if origin is in allowed list or matches Vercel pattern
-        if (allowedOrigins.includes(lowerOrigin) || lowerOrigin.includes('vercel.app')) {
+        // Allow anything from ayur-vidya.in, ayurvidya.in, or vercel.app
+        const isAllowed = allowedOrigins.includes(lowerOrigin) || 
+                         lowerOrigin.includes('ayur-vidya.in') || 
+                         lowerOrigin.includes('ayurvidya.in') || 
+                         lowerOrigin.includes('vercel.app') ||
+                         lowerOrigin.includes('localhost');
+
+        if (isAllowed) {
           callback(null, true);
         } else {
           console.error(`CORS Blocked for origin: ${origin}`);

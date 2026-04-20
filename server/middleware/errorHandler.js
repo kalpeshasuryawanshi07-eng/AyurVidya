@@ -9,6 +9,10 @@ const { AppError } = require('./errors');
  * Requirements: 18.1, 18.2, 18.3, 18.4, 18.5, 18.6, 18.7, 18.8, 18.9, 18.10
  */
 const errorHandler = (err, req, res, next) => {
+  // Ensure CORS headers are present even on error responses
+  res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
   // Log error with stack trace for debugging (Requirement 18.6)
   console.error('------- BACKEND ERROR LOG -------');
   console.error(`Timestamp: ${new Date().toISOString()}`);
