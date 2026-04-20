@@ -33,12 +33,14 @@ router.post(
       // Check for validation errors
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(400).json({
-          status: 'error',
-          message: 'Validation failed',
-          errors: errors.array().map(err => err.msg)
-        });
-      }
+      const errorDetails = errors.array().map(err => `${err.path}: ${err.msg}`);
+      console.error(`[PAYMENT] Validation Error - Body: ${JSON.stringify(req.body)}, Errors: ${errorDetails.join(', ')}`);
+      return res.status(400).json({
+        status: 'error',
+        message: 'Validation failed',
+        errors: errors.array().map(err => err.msg)
+      });
+    }
 
       const { courseId, paymentMethod } = req.body;
       const userId = req.user.userId;
@@ -60,8 +62,13 @@ router.post(
         data: orderData
       });
     } catch (error) {
-      // Log payment order creation failure
-      console.error(`[PAYMENT] Order creation failed - User: ${req.user.userId}, Error: ${error.message}`);
+      // Log full error details for diagnostics
+      console.error('[PAYMENT] Order creation failed details:', {
+        userId: req.user.userId,
+        errorMessage: error.message,
+        errorStack: error.stack,
+        errorRaw: error
+      });
 
       const statusCode = error.statusCode || 500;
       res.status(statusCode).json({
