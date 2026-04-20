@@ -86,44 +86,75 @@ class LanguageService {
     // These require deep localization or structured preservation
     
     // Handle vivaPrep
-    if (contentObject.vivaPrep) {
-      const v = contentObject.vivaPrep;
+    if (contentObject.vivaPrep && typeof contentObject.vivaPrep === 'object') {
+      const v = contentObject.vivaPrep || {};
       result.vivaPrep = {
         ...v,
-        etymology: v.etymology ? (validLang === 'mr' ? (v.etymology.mr || v.etymology.en) : v.etymology.en) : undefined,
-        rasaPanchakaSummary: v.rasaPanchakaSummary ? (validLang === 'mr' ? (v.rasaPanchakaSummary.mr || v.rasaPanchakaSummary.en) : v.rasaPanchakaSummary.en) : undefined,
-        vivaQuestions: Array.isArray(v.vivaQuestions) ? v.vivaQuestions.map(q => ({
-          question: validLang === 'mr' ? (q.question.mr || q.question.en) : q.question.en,
-          answer: validLang === 'mr' ? (q.answer.mr || q.answer.en) : q.answer.en
-        })) : []
+        etymology: (v.etymology && typeof v.etymology === 'object') 
+          ? (validLang === 'mr' ? (v.etymology.mr || v.etymology.en) : v.etymology.en) 
+          : undefined,
+        rasaPanchakaSummary: (v.rasaPanchakaSummary && typeof v.rasaPanchakaSummary === 'object') 
+          ? (validLang === 'mr' ? (v.rasaPanchakaSummary.mr || v.rasaPanchakaSummary.en) : v.rasaPanchakaSummary.en) 
+          : undefined,
+        vivaQuestions: Array.isArray(v.vivaQuestions) ? v.vivaQuestions.map(q => {
+          if (!q || typeof q !== 'object') return {};
+          return {
+            question: (q.question && typeof q.question === 'object') 
+              ? (validLang === 'mr' ? (q.question.mr || q.question.en) : q.question.en) 
+              : (q.question || ''),
+            answer: (q.answer && typeof q.answer === 'object') 
+              ? (validLang === 'mr' ? (q.answer.mr || q.answer.en) : q.answer.en) 
+              : (q.answer || '')
+          };
+        }) : []
       };
     }
 
     // Handle modernResearchDetailed
     if (Array.isArray(contentObject.modernResearchDetailed)) {
-      result.modernResearchDetailed = contentObject.modernResearchDetailed.map(r => ({
-        ...r,
-        action: validLang === 'mr' ? (r.action.mr || r.action.en) : r.action.en,
-        mechanism: validLang === 'mr' ? (r.mechanism.mr || r.mechanism.en) : r.mechanism.en
-      }));
+      result.modernResearchDetailed = contentObject.modernResearchDetailed.map(r => {
+        if (!r || typeof r !== 'object') return r;
+        return {
+          ...r,
+          action: (r.action && typeof r.action === 'object') 
+            ? (validLang === 'mr' ? (r.action.mr || r.action.en) : r.action.en) 
+            : (r.action || ''),
+          mechanism: (r.mechanism && typeof r.mechanism === 'object') 
+            ? (validLang === 'mr' ? (r.mechanism.mr || r.mechanism.en) : r.mechanism.en) 
+            : (r.mechanism || '')
+        };
+      });
     }
 
     // Handle synonymsDetailed
     if (Array.isArray(contentObject.synonymsDetailed)) {
-      result.synonymsDetailed = contentObject.synonymsDetailed.map(s => ({
-        ...s,
-        name: validLang === 'mr' ? (s.name.mr || s.name.en) : s.name.en,
-        meaning: validLang === 'mr' ? (s.meaning.mr || s.meaning.en) : s.meaning.en
-      }));
+      result.synonymsDetailed = contentObject.synonymsDetailed.map(s => {
+        if (!s || typeof s !== 'object') return s;
+        return {
+          ...s,
+          name: (s.name && typeof s.name === 'object') 
+            ? (validLang === 'mr' ? (s.name.mr || s.name.en) : s.name.en) 
+            : (s.name || ''),
+          meaning: (s.meaning && typeof s.meaning === 'object') 
+            ? (validLang === 'mr' ? (s.meaning.mr || s.meaning.en) : s.meaning.en) 
+            : (s.meaning || '')
+        };
+      });
     }
 
     // Handle therapeuticActions
-    if (contentObject.therapeuticActions) {
+    if (contentObject.therapeuticActions && typeof contentObject.therapeuticActions === 'object') {
       const ta = contentObject.therapeuticActions;
       result.therapeuticActions = {
-        doshaKarma: ta.doshaKarma ? (validLang === 'mr' ? (ta.doshaKarma.mr || ta.doshaKarma.en) : ta.doshaKarma.en) : undefined,
-        dhatuKarma: ta.dhatuKarma ? (validLang === 'mr' ? (ta.dhatuKarma.mr || ta.dhatuKarma.en) : ta.dhatuKarma.en) : undefined,
-        generalActions: ta.generalActions ? (validLang === 'mr' ? (ta.generalActions.mr || ta.generalActions.en) : ta.generalActions.en) : undefined
+        doshaKarma: (ta.doshaKarma && typeof ta.doshaKarma === 'object') 
+          ? (validLang === 'mr' ? (ta.doshaKarma.mr || ta.doshaKarma.en) : ta.doshaKarma.en) 
+          : undefined,
+        dhatuKarma: (ta.dhatuKarma && typeof ta.dhatuKarma === 'object') 
+          ? (validLang === 'mr' ? (ta.dhatuKarma.mr || ta.dhatuKarma.en) : ta.dhatuKarma.en) 
+          : undefined,
+        generalActions: (ta.generalActions && typeof ta.generalActions === 'object') 
+          ? (validLang === 'mr' ? (ta.generalActions.mr || ta.generalActions.en) : ta.generalActions.en) 
+          : undefined
       };
     }
 

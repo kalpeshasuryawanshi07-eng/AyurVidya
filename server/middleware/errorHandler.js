@@ -10,13 +10,15 @@ const { AppError } = require('./errors');
  */
 const errorHandler = (err, req, res, next) => {
   // Log error with stack trace for debugging (Requirement 18.6)
-  console.error('Error occurred:', {
-    message: err.message,
-    stack: err.stack,
-    path: req.path,
-    method: req.method,
-    timestamp: new Date().toISOString(),
-  });
+  console.error('------- BACKEND ERROR LOG -------');
+  console.error(`Timestamp: ${new Date().toISOString()}`);
+  console.error(`Method:    ${req.method}`);
+  console.error(`Path:      ${req.path}`);
+  console.error(`Error:     ${err.message}`);
+  if (err.stack) {
+    console.error(`Stack:     ${err.stack}`);
+  }
+  console.error('---------------------------------');
 
   // Mongoose validation error (Requirement 18.1)
   if (err.name === 'ValidationError') {
