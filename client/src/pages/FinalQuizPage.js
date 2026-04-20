@@ -189,27 +189,14 @@ export default function FinalQuizPage() {
     <>
       <Navbar />
       <div className={styles.container}>
-        {/* Progress Bar Aura */}
-        <div className={styles.progressContainer} style={{ width: '100%', maxWidth: '800px', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '10px', marginBottom: '30px', overflow: 'hidden' }}>
-          <div 
-            style={{ 
-              width: `${((currentIndex + 1) / questions.length) * 100}%`, 
-              height: '100%', 
-              background: 'linear-gradient(90deg, #2d6a4f, #52b788)',
-              boxShadow: '0 0 15px #52b788',
-              transition: 'width 0.4s ease'
-            }} 
-          />
+        <div className={styles.headerCard}>
+          <p className={styles.totalQuestions}>Total Questions: {questions.length}</p>
+          <p className={styles.reviewText}>Please review your answers before submitting the entire exam.</p>
         </div>
 
-        <div className={styles.header}>
-          <h1>Final Certification Exam</h1>
-          <p>Master Ayurvedic Knowledge. Score 70%+ to unlock your certificate.</p>
-        </div>
-
-        <div className={styles.info}>
-          <p><strong>Quest Progress:</strong> {currentIndex + 1} of {questions.length}</p>
-          <p><strong>Status:</strong> {Object.keys(answers).length} / {questions.length} Answered</p>
+        <div className={styles.progressInfo}>
+          <span>Question {currentIndex + 1} of {questions.length}</span>
+          <span>{Object.keys(answers).length} / {questions.length} Answered</span>
         </div>
 
         <div className={styles.questionCard}>
@@ -244,7 +231,7 @@ export default function FinalQuizPage() {
                 onClick={handleSubmit}
                 disabled={submitting || Object.keys(answers).length < questions.length}
               >
-                {submitting ? 'Authenticating...' : 'Submit Certification'}
+                {submitting ? 'Submitting...' : 'Submit Exam'}
               </button>
             ) : (
               <button 
@@ -255,10 +242,6 @@ export default function FinalQuizPage() {
               </button>
             )}
           </div>
-        </div>
-
-        <div className={styles.progress}>
-          AyurVidya Certification Protocol | Neural Link Active
         </div>
       </div>
       <Footer />

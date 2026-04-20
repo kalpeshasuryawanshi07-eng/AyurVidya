@@ -106,7 +106,9 @@ export default function CourseDetailPage() {
   const availablePaymentMethods = useMemo(() => {
     if (!course || !course.isPaid || (course.price || 0) === 0) return [];
     const methods = Array.isArray(course.paymentMethods) ? course.paymentMethods : [];
-    return methods.length > 0 ? methods : ["upi", "card", "netbanking"];
+    const fallback = ["card", "netbanking"];
+    const finalMethods = methods.length > 0 ? methods : fallback;
+    return finalMethods.filter(m => m !== 'upi');
   }, [course]);
 
   const modules = useMemo(() => {
