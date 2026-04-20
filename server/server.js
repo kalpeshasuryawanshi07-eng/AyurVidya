@@ -56,10 +56,10 @@ const startServer = async () => {
 
     // Health check endpoint
     app.get('/health', (req, res) => {
-      res.json({ 
+      res.status(200).json({ 
         status: 'ok', 
+        uptime: process.uptime(),
         message: 'Server is running',
-        database: 'connected',
         environment: config.nodeEnv
       });
     });
