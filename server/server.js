@@ -25,6 +25,10 @@ const startServer = async () => {
     const allowedOrigins = [
       'http://localhost:3000',
       'http://127.0.0.1:3000',
+      'https://ayurvidya.in',
+      'https://www.ayurvidya.in',
+      'https://Ayur-Vidya.in',
+      'https://www.Ayur-Vidya.in',
       'https://ayur-vidya-3wbybo5v1-kalpeshasuryawanshi07-7026s-projects.vercel.app',
       'https://ayur-vidya-8iw0yfvlo-kalpeshasuryawanshi07-7026s-projects.vercel.app',
       config.corsOrigin // Also allow environment variable
