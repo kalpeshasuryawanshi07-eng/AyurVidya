@@ -29,22 +29,26 @@ const startServer = async () => {
       'http://127.0.0.1:3000',
       'https://ayurvidya.in',
       'https://www.ayurvidya.in',
+      'https://ayur-vidya.in',
+      'https://www.ayur-vidya.in',
+      'https://api.ayur-vidya.in',
       'https://Ayur-Vidya.in',
       'https://www.Ayur-Vidya.in',
-      'https://ayur-vidya-3wbybo5v1-kalpeshasuryawanshi07-7026s-projects.vercel.app',
-      'https://ayur-vidya-8iw0yfvlo-kalpeshasuryawanshi07-7026s-projects.vercel.app',
-      config.corsOrigin // Also allow environment variable
-    ].filter(Boolean);
+      config.corsOrigin
+    ].map(o => o?.toLowerCase()).filter(Boolean);
 
     app.use(cors({
       origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl requests)
+        // Allow requests with no origin (like mobile apps)
         if (!origin) return callback(null, true);
         
+        const lowerOrigin = origin.toLowerCase();
+        
         // Check if origin is in allowed list or matches Vercel pattern
-        if (allowedOrigins.includes(origin) || origin.includes('vercel.app')) {
+        if (allowedOrigins.includes(lowerOrigin) || lowerOrigin.includes('vercel.app')) {
           callback(null, true);
         } else {
+          console.error(`CORS Blocked for origin: ${origin}`);
           callback(new Error('Not allowed by CORS'));
         }
       },
