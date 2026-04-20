@@ -166,6 +166,7 @@ export default function CourseDetailPage() {
         await initiateCheckout(
           courseId,
           selectedPaymentMethod || availablePaymentMethods[0],
+          user, // 👈 Passing the user object
           () => {
             addToast("Payment successful and enrollment completed.", "success");
             setEnrolledSlugs((prev) => Array.from(new Set([...prev, course.slug])));

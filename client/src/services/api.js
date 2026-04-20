@@ -166,7 +166,7 @@ function loadRazorpayScript() {
   });
 }
 
-export async function initiateCheckout(courseId, paymentMethod, onSuccess, onFailure) {
+export async function initiateCheckout(courseId, paymentMethod, userData, onSuccess, onFailure) {
   try {
     const cid = String(courseId || "");
     const normalizedMethod = paymentMethod ? String(paymentMethod).trim().toLowerCase() : "";
@@ -183,7 +183,10 @@ export async function initiateCheckout(courseId, paymentMethod, onSuccess, onFai
       name: "AyurVidya",
       description: "Course Enrollment",
       order_id: data.razorpayOrderId,
-      prefill: {}, // Remove restriction to show all available methods
+      prefill: {
+        email: userData?.email || "",
+        contact: userData?.phone || "9999999999", // Fallback number to unlock UPI
+      },
       handler: async (response) => {
         try {
           await verifyPayment({
