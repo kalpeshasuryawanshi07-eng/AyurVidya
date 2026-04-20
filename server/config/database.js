@@ -9,8 +9,6 @@ const connectDB = async () => {
   try {
     // Connection options
     const options = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       serverSelectionTimeoutMS: 30000, // 30s for Atlas cold starts
       socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
     };

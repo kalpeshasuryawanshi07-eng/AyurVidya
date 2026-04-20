@@ -45,8 +45,6 @@ const certificateSchema = new mongoose.Schema({
 
 // Create compound unique index on userId and courseId
 certificateSchema.index({ userId: 1, courseId: 1 }, { unique: true });
-certificateSchema.index({ certificateNumber: 1 }, { unique: true });
-certificateSchema.index({ verificationCode: 1 }, { unique: true });
 certificateSchema.index({ userId: 1 });
 
 const Certificate = mongoose.model('Certificate', certificateSchema);
