@@ -99,13 +99,11 @@ export default function FinalQuizPage() {
 
   if (loading) {
     return (
-      <>
+      <div className={styles.container}>
         <Navbar />
-        <div className={styles.container}>
-          <Loader />
-        </div>
+        <Loader />
         <Footer />
-      </>
+      </div>
     );
   }
 
@@ -116,34 +114,34 @@ export default function FinalQuizPage() {
         <Navbar />
         <div className={styles.container}>
           <div className={`${styles.results} ${result.passed ? styles.passed : styles.failed}`}>
-            <h2 className={styles.zenithTitle}>Certification Protocol Results</h2>
+            <h2>Exam Results</h2>
             <div className={styles.scoreCircle}>
               {result.score}%
             </div>
             
             {result.passed ? (
               <>
-                <h3 style={{ color: '#52b788', marginBottom: '15px', fontSize: '1.8rem' }}>Master Status Achieved</h3>
-                <p style={{ color: '#b7e4c7', fontSize: '1.1rem', marginBottom: '30px' }}>You have successfully synchronized with the course knowledge. Your certificate is generating.</p>
+                <h3 className="mb-2" style={{ color: 'var(--color-success)' }}>Certification Achieved</h3>
+                <p className="mb-3">Congratulations! You have successfully mastered the course content. Your certificate is now available.</p>
                 <div className={styles.actions}>
-                  <button onClick={() => navigate('/certificates')} className={`${styles.btn} ${styles.certBtn}`}>
-                    Access Certificate
+                  <button onClick={() => navigate('/certificates')} className="btn btn-primary">
+                    View Certificate
                   </button>
-                  <button onClick={() => navigate(`/courses/${slug}`)} className={`${styles.btn} ${styles.prevBtn}`}>
-                    Course Dashboard
+                  <button onClick={() => navigate(`/courses/${slug}`)} className="btn btn-outline">
+                    Return to Course
                   </button>
                 </div>
               </>
             ) : (
               <>
-                <h3 style={{ color: '#ef4444', marginBottom: '15px', fontSize: '1.8rem' }}>Synchronization Failed</h3>
-                <p style={{ color: '#b7e4c7', fontSize: '1.1rem', marginBottom: '30px' }}>Minimum 70% required for certification. Review the sacred texts and attempt the link again.</p>
+                <h3 className="mb-2" style={{ color: 'var(--color-error)' }}>Assessment Not Passed</h3>
+                <p className="mb-3">You need a minimum score of 70% to receive certification. Please review the course materials and try again.</p>
                 <div className={styles.actions}>
-                  <button onClick={() => { setHasStarted(false); fetchQuiz(); }} className={`${styles.retryBtn}`}>
-                    Retry Protocol
+                  <button onClick={() => { setHasStarted(false); fetchQuiz(); }} className="btn btn-primary">
+                    Retry Exam
                   </button>
-                  <button onClick={() => navigate(`/courses/${slug}`)} className={`${styles.btn} ${styles.prevBtn}`}>
-                    Abort to Dashboard
+                  <button onClick={() => navigate(`/courses/${slug}`)} className="btn btn-outline">
+                    Back to Dashboard
                   </button>
                 </div>
               </>
@@ -160,18 +158,21 @@ export default function FinalQuizPage() {
       <>
         <Navbar />
         <div className={styles.container}>
-          <div className={styles.results} style={{ textAlign: 'left', padding: '50px 70px', maxWidth: '850px' }}>
-            <h2 className={styles.zenithTitle} style={{ textAlign: 'center', marginBottom: '30px', color: '#52b788' }}>Certification Protocol</h2>
-            <ul style={{ lineHeight: '2.5', fontSize: '1.2rem', color: '#b7e4c7', marginBottom: '45px', listStyleType: 'none', padding: 0 }}>
-              <li><span style={{ color: '#52b788', marginRight: '15px' }}>◈</span> Mandatory final assessment for course mastery.</li>
-              <li><span style={{ color: '#52b788', marginRight: '15px' }}>◈</span> <strong>70% Score</strong> required to unlock the Diamond-Edge certificate.</li>
-              <li><span style={{ color: '#52b788', marginRight: '15px' }}>◈</span> Immersive environment - do not leave or refresh the session.</li>
-              <li><span style={{ color: '#52b788', marginRight: '15px' }}>◈</span> Question logic pulls from all verified course knowledge.</li>
-            </ul>
-            <div style={{ textAlign: 'center' }}>
-              <button onClick={() => setHasStarted(true)} className={`${styles.btn} ${styles.submitBtn}`} style={{ padding: '20px 60px', fontSize: '1.3rem', borderRadius: '50px', width: 'auto' }}>
-                Initiate Link
-              </button>
+          <div className={styles.results}>
+            <h2>Course Certification Exam</h2>
+            <div className={styles.introContent}>
+              <p className="mb-3">To earn your official certificate, please complete this final assessment. This ensures you have a comprehensive understanding of the course materials.</p>
+              <ul className={styles.introList}>
+                <li>A minimum score of <strong>70%</strong> is required for certification.</li>
+                <li>The exam covers all modules and topics within this course.</li>
+                <li>Please do not refresh or navigate away from this page during the exam.</li>
+                <li>Multiple attempts are allowed if needed.</li>
+              </ul>
+              <div className="text-center mt-3">
+                <button onClick={() => setHasStarted(true)} className="btn btn-primary btn-lg">
+                  Begin Assessment
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -189,27 +190,14 @@ export default function FinalQuizPage() {
     <>
       <Navbar />
       <div className={styles.container}>
-        {/* Progress Bar Aura */}
-        <div className={styles.progressContainer} style={{ width: '100%', maxWidth: '800px', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '10px', marginBottom: '30px', overflow: 'hidden' }}>
-          <div 
-            style={{ 
-              width: `${((currentIndex + 1) / questions.length) * 100}%`, 
-              height: '100%', 
-              background: 'linear-gradient(90deg, #2d6a4f, #52b788)',
-              boxShadow: '0 0 15px #52b788',
-              transition: 'width 0.4s ease'
-            }} 
-          />
-        </div>
-
         <div className={styles.header}>
-          <h1>Final Certification Exam</h1>
-          <p>Master Ayurvedic Knowledge. Score 70%+ to unlock your certificate.</p>
+          <h1>Certification Exam</h1>
+          <p>Complete the assessment to verify your mastery of this knowledge.</p>
         </div>
 
         <div className={styles.info}>
-          <p><strong>Quest Progress:</strong> {currentIndex + 1} of {questions.length}</p>
-          <p><strong>Status:</strong> {Object.keys(answers).length} / {questions.length} Answered</p>
+          <span>Question {currentIndex + 1} of {questions.length}</span>
+          <span>{Object.keys(answers).length} / {questions.length} Answered</span>
         </div>
 
         <div className={styles.questionCard}>
@@ -231,7 +219,7 @@ export default function FinalQuizPage() {
 
           <div className={styles.navigation}>
             <button 
-              className={`${styles.btn} ${styles.prevBtn}`} 
+              className="btn btn-outline"
               onClick={handlePrev} 
               disabled={currentIndex === 0}
             >
@@ -240,25 +228,25 @@ export default function FinalQuizPage() {
             
             {currentIndex === questions.length - 1 ? (
               <button 
-                className={`${styles.btn} ${styles.submitBtn}`} 
+                className="btn btn-primary"
                 onClick={handleSubmit}
                 disabled={submitting || Object.keys(answers).length < questions.length}
               >
-                {submitting ? 'Authenticating...' : 'Submit Certification'}
+                {submitting ? 'Submitting...' : 'Submit Exam'}
               </button>
             ) : (
               <button 
-                className={`${styles.btn} ${styles.nextBtn}`} 
+                className="btn btn-primary"
                 onClick={handleNext}
               >
-                Next
+                Next Question
               </button>
             )}
           </div>
         </div>
 
-        <div className={styles.progress}>
-          AyurVidya Certification Protocol | Neural Link Active
+        <div className={styles.progressFooter}>
+          {slug.replace(/-/g, ' ')} | Certification Assessment
         </div>
       </div>
       <Footer />
