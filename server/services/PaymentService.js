@@ -30,16 +30,24 @@ class PaymentService {
 
   async createOrder(userId, courseId, paymentMethod) {
     const course = await Course.findById(courseId);
-    if (!course) throw new Error('Course not found');
+    if (!course) {
+      const error = new Error('Course not found');
+      error.statusCode = 404;
+      throw error;
+    }
 
     // Check if user is already enrolled
     const existingEnrollment = await Enrollment.findOne({ userId, courseId });
     if (existingEnrollment) {
-      throw new Error('User is already enrolled in this course');
+      const error = new Error('User is already enrolled in this course');
+      error.statusCode = 409;
+      throw error;
     }
 
     if (!course.isPaid || course.price === 0) {
-      throw new Error('This course is free.');
+      const error = new Error('This course is free.');
+      error.statusCode = 400;
+      throw error;
     }
 
     // Validate payment method if specified

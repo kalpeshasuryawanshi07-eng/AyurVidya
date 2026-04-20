@@ -168,9 +168,13 @@ function loadRazorpayScript() {
 
 export async function initiateCheckout(courseId, paymentMethod, onSuccess, onFailure) {
   try {
+    const cid = String(courseId || "");
     const normalizedMethod = paymentMethod ? String(paymentMethod).trim().toLowerCase() : "";
     const methodKey = RAZORPAY_METHOD_KEYS[normalizedMethod];
-    const data = await createOrder(courseId, methodKey || undefined);
+    
+    console.log("[CHECKOUT] Initiating:", { courseId: cid, method: normalizedMethod, key: methodKey });
+    
+    const data = await createOrder(cid, methodKey || undefined);
     await loadRazorpayScript();
     const options = {
       key: data.keyId,
