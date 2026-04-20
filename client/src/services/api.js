@@ -178,26 +178,30 @@ export async function initiateCheckout(courseId, paymentMethod, onSuccess, onFai
     await loadRazorpayScript();
     const options = {
       key: data.keyId,
-      amount: data.amount,
-      currency: data.currency,
+      amount: data.amount * 100,
+      currency: "INR",
       name: "AyurVidya",
       description: "Course Enrollment",
       order_id: data.razorpayOrderId,
-      theme: { color: "#1B4332" },
-      method: methodKey ? { [methodKey]: true } : undefined,
+      prefill: {
+        method: data.paymentMethod, // Use method returned from server
+      },
       handler: async (response) => {
         try {
           await verifyPayment({
-            razorpayOrderId:   response.razorpay_order_id,
+            razorpayOrderId: response.razorpay_order_id,
             razorpayPaymentId: response.razorpay_payment_id,
             razorpaySignature: response.razorpay_signature,
           });
           onSuccess();
-        } catch {
-          onFailure("Payment verification failed. Contact support.");
+        } catch (err) {
+          onFailure(err.response?.data?.message || "Payment verification failed.");
         }
       },
+      theme: { color: "#22c55e" },
     };
+
+    console.log("[RAZORPAY] Options:", options);
     const rzp = new window.Razorpay(options);
     rzp.on("payment.failed", (r) => onFailure(r.error.description));
     rzp.open();

@@ -83,7 +83,8 @@ class PaymentService {
       razorpayOrderId: razorpayOrder.id,
       amount: course.price,
       currency: 'INR',
-      keyId: process.env.RAZORPAY_KEY_ID
+      keyId: process.env.RAZORPAY_KEY_ID,
+      paymentMethod // 👈 Added this
     };
   }
 
