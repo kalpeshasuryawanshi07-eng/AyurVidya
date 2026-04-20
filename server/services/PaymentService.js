@@ -60,7 +60,7 @@ class PaymentService {
     const orderOptions = {
       amount: course.price * 100,
       currency: 'INR',
-      receipt: `order_${userId}_${courseId}_${Date.now()}`
+      receipt: `rcpt_${Date.now()}`
     };
 
     const razorpayOrder = await this.razorpay.orders.create(orderOptions);
