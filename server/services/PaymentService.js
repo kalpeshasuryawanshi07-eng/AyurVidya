@@ -58,10 +58,12 @@ class PaymentService {
     }
 
     const orderOptions = {
-      amount: course.price * 100,
+      amount: Math.round(course.price * 100),
       currency: 'INR',
       receipt: `rcpt_${Date.now()}`
     };
+
+    console.log('[PAYMENT] Sending to Razorpay:', orderOptions);
 
     const razorpayOrder = await this.razorpay.orders.create(orderOptions);
 
