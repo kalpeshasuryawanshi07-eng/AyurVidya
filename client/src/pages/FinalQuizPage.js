@@ -116,34 +116,34 @@ export default function FinalQuizPage() {
         <Navbar />
         <div className={styles.container}>
           <div className={`${styles.results} ${result.passed ? styles.passed : styles.failed}`}>
-            <h2>Final Exam Results</h2>
+            <h2 className={styles.zenithTitle}>Certification Protocol Results</h2>
             <div className={styles.scoreCircle}>
               {result.score}%
             </div>
             
             {result.passed ? (
               <>
-                <h3 style={{ color: '#10b981', marginBottom: '10px' }}>Congratulations! You Passed!</h3>
-                <p>You have successfully completed the course and earned your certificate!</p>
+                <h3 style={{ color: '#52b788', marginBottom: '15px', fontSize: '1.8rem' }}>Master Status Achieved</h3>
+                <p style={{ color: '#b7e4c7', fontSize: '1.1rem', marginBottom: '30px' }}>You have successfully synchronized with the course knowledge. Your certificate is generating.</p>
                 <div className={styles.actions}>
                   <button onClick={() => navigate('/certificates')} className={`${styles.btn} ${styles.certBtn}`}>
-                    View My Certificates
+                    Access Certificate
                   </button>
-                  <button onClick={() => navigate(`/courses/${slug}`)} className={styles.btn}>
-                    Back to Course
+                  <button onClick={() => navigate(`/courses/${slug}`)} className={`${styles.btn} ${styles.prevBtn}`}>
+                    Course Dashboard
                   </button>
                 </div>
               </>
             ) : (
               <>
-                <h3 style={{ color: '#ef4444', marginBottom: '10px' }}>You did not pass the exam.</h3>
-                <p>You need at least 70% to pass. Please review the course materials and try again.</p>
+                <h3 style={{ color: '#ef4444', marginBottom: '15px', fontSize: '1.8rem' }}>Synchronization Failed</h3>
+                <p style={{ color: '#b7e4c7', fontSize: '1.1rem', marginBottom: '30px' }}>Minimum 70% required for certification. Review the sacred texts and attempt the link again.</p>
                 <div className={styles.actions}>
                   <button onClick={() => { setHasStarted(false); fetchQuiz(); }} className={`${styles.retryBtn}`}>
-                    Retry Exam
+                    Retry Protocol
                   </button>
-                  <button onClick={() => navigate(`/courses/${slug}`)} className={styles.btn}>
-                    Back to Course
+                  <button onClick={() => navigate(`/courses/${slug}`)} className={`${styles.btn} ${styles.prevBtn}`}>
+                    Abort to Dashboard
                   </button>
                 </div>
               </>
@@ -160,18 +160,17 @@ export default function FinalQuizPage() {
       <>
         <Navbar />
         <div className={styles.container}>
-          <div className={styles.results} style={{ textAlign: 'left', padding: '40px 60px' }}>
-            <h2 style={{ textAlign: 'center', marginBottom: '20px', color: '#1B4332' }}>Final Course Exam Rules</h2>
-            <ul style={{ lineHeight: '2', fontSize: '1.1rem', color: '#333', marginBottom: '40px' }}>
-              <li>📝 This is a mandatory <strong>Final Exam</strong> that draws continuously from every topic you have covered.</li>
-              <li>🎯 You must score <strong>70% or above</strong> to unlock and generate your final course certificate.</li>
-              <li>⏰ There is no time limit, but please do not refresh the page or all progress will be lost.</li>
-              <li>🚫 <strong>Do not cheat.</strong> This means no looking up answers in other tabs. We test your true knowledge.</li>
-              <li>🔄 If you fail, you can always retry, however question groupings will be randomized each attempt.</li>
+          <div className={styles.results} style={{ textAlign: 'left', padding: '50px 70px', maxWidth: '850px' }}>
+            <h2 className={styles.zenithTitle} style={{ textAlign: 'center', marginBottom: '30px', color: '#52b788' }}>Certification Protocol</h2>
+            <ul style={{ lineHeight: '2.5', fontSize: '1.2rem', color: '#b7e4c7', marginBottom: '45px', listStyleType: 'none', padding: 0 }}>
+              <li><span style={{ color: '#52b788', marginRight: '15px' }}>◈</span> Mandatory final assessment for course mastery.</li>
+              <li><span style={{ color: '#52b788', marginRight: '15px' }}>◈</span> <strong>70% Score</strong> required to unlock the Diamond-Edge certificate.</li>
+              <li><span style={{ color: '#52b788', marginRight: '15px' }}>◈</span> Immersive environment - do not leave or refresh the session.</li>
+              <li><span style={{ color: '#52b788', marginRight: '15px' }}>◈</span> Question logic pulls from all verified course knowledge.</li>
             </ul>
             <div style={{ textAlign: 'center' }}>
-              <button onClick={() => setHasStarted(true)} className={`${styles.btn} ${styles.submitBtn}`} style={{ padding: '15px 40px', fontSize: '1.2rem', borderRadius: '50px' }}>
-                I Understand, Start Quiz
+              <button onClick={() => setHasStarted(true)} className={`${styles.btn} ${styles.submitBtn}`} style={{ padding: '20px 60px', fontSize: '1.3rem', borderRadius: '50px', width: 'auto' }}>
+                Initiate Link
               </button>
             </div>
           </div>
@@ -190,14 +189,27 @@ export default function FinalQuizPage() {
     <>
       <Navbar />
       <div className={styles.container}>
+        {/* Progress Bar Aura */}
+        <div className={styles.progressContainer} style={{ width: '100%', maxWidth: '800px', height: '6px', background: 'rgba(255,255,255,0.1)', borderRadius: '10px', marginBottom: '30px', overflow: 'hidden' }}>
+          <div 
+            style={{ 
+              width: `${((currentIndex + 1) / questions.length) * 100}%`, 
+              height: '100%', 
+              background: 'linear-gradient(90deg, #2d6a4f, #52b788)',
+              boxShadow: '0 0 15px #52b788',
+              transition: 'width 0.4s ease'
+            }} 
+          />
+        </div>
+
         <div className={styles.header}>
-          <h1>Final Course Certification Exam</h1>
-          <p>You must score at least 70% to earn the certificate.</p>
+          <h1>Final Certification Exam</h1>
+          <p>Master Ayurvedic Knowledge. Score 70%+ to unlock your certificate.</p>
         </div>
 
         <div className={styles.info}>
-          <p><strong>Total Questions:</strong> {questions.length}</p>
-          <p>Please review your answers before submitting the entire exam.</p>
+          <p><strong>Quest Progress:</strong> {currentIndex + 1} of {questions.length}</p>
+          <p><strong>Status:</strong> {Object.keys(answers).length} / {questions.length} Answered</p>
         </div>
 
         <div className={styles.questionCard}>
@@ -232,7 +244,7 @@ export default function FinalQuizPage() {
                 onClick={handleSubmit}
                 disabled={submitting || Object.keys(answers).length < questions.length}
               >
-                {submitting ? 'Submitting...' : 'Submit Exam'}
+                {submitting ? 'Authenticating...' : 'Submit Certification'}
               </button>
             ) : (
               <button 
@@ -246,7 +258,7 @@ export default function FinalQuizPage() {
         </div>
 
         <div className={styles.progress}>
-          Question {currentIndex + 1} of {questions.length} | Answered: {Object.keys(answers).length}
+          AyurVidya Certification Protocol | Neural Link Active
         </div>
       </div>
       <Footer />
