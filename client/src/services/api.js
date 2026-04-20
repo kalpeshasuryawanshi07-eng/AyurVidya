@@ -6,7 +6,7 @@ if (!BASE_URL) {
   if (process.env.NODE_ENV === "production" || window.location.hostname !== "localhost") {
     BASE_URL = `${window.location.origin}/api`;
   } else {
-    BASE_URL = "http://127.0.0.1:5000/api";
+    BASE_URL = "https://127.0.0.1:5000/api";
   }
 }
 
