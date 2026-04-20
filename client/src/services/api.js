@@ -184,8 +184,29 @@ export async function initiateCheckout(courseId, paymentMethod, userData, onSucc
       description: "Course Enrollment",
       order_id: data.razorpayOrderId,
       prefill: {
-        email: userData?.email || "",
-        contact: userData?.phone || "9999999999", // Fallback number to unlock UPI
+        email: userData?.email || "test@ayurvidya.in",
+        contact: userData?.phone || "8888888888", // Using 8888888888 (realistic test number)
+      },
+      config: {
+        display: {
+          blocks: {
+            banks: {
+              name: "Unified Payments Interface",
+              instruments: [
+                {
+                  method: "upi",
+                },
+                {
+                  method: "card",
+                },
+              ],
+            },
+          },
+          sequence: ["block.banks"],
+          preferences: {
+            show_default_blocks: true,
+          },
+        },
       },
       handler: async (response) => {
         try {
