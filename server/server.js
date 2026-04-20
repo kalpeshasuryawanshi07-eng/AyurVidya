@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const path = require('path');
+const fs = require('fs');
 const config = require('./config/env');
 const connectDB = require('./config/database');
 const errorHandler = require('./middleware/errorHandler');
@@ -94,10 +96,8 @@ const startServer = async () => {
     app.use('/api/certificates', certificatesRoutes);
 
     // Serve static assets in production
-    if (config.nodeEnv === 'production') {
-      const path = require('path');
-      const clientBuildPath = path.join(__dirname, '../client/build');
-      
+    const clientBuildPath = path.join(__dirname, '../client/build');
+    if (config.nodeEnv === 'production' && fs.existsSync(clientBuildPath)) {
       app.use(express.static(clientBuildPath));
       
       app.get('*', (req, res) => {
@@ -105,6 +105,15 @@ const startServer = async () => {
       });
       
       console.log('✓ Serving static files from:', clientBuildPath);
+    } else {
+      // Fallback for API-only mode or when build folder is missing
+      app.get('/', (req, res) => {
+        res.json({ 
+          status: 'ok',
+          message: 'AyurVidya API is running',
+          version: '1.0.0'
+        });
+      });
     }
 
     // Error handling middleware (must be last)
