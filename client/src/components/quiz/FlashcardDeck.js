@@ -71,15 +71,18 @@ export default function FlashcardDeck({ topicSlug }) {
         <span className={styles.deckHint}>{t("topic.flipHint")}</span>
       </div>
 
-      <div className={`flip-card${flipped ? " flipped" : ""}`} onClick={() => setFlipped((value) => !value)}>
-        <div className="flip-card-inner">
-          <div className="flip-card-front">
+      <div 
+        className={`${styles.flipCard}${flipped ? ` ${styles.flipped}` : ""}`} 
+        onClick={() => setFlipped((value) => !value)}
+      >
+        <div className={styles.flipCardInner}>
+          <div className={styles.flipCardFront}>
             <div>
               <div className={styles.cardLabel}>{t("topic.question")}</div>
               {cards[current].front}
             </div>
           </div>
-          <div className="flip-card-back">
+          <div className={styles.flipCardBack}>
             <div>
               <div className={styles.cardLabel} style={{ color: "rgba(255,255,255,0.7)" }}>
                 {t("topic.answer")}
