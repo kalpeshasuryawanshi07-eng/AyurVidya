@@ -51,6 +51,15 @@
   font-weight: 700;
   color: var(--color-primary);
 }
+.logoImage {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+.logo:hover .logoImage {
+  transform: scale(1.05);
+}
 .navLinks {
   display: flex;
   align-items: center;

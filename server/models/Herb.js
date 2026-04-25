@@ -256,8 +256,11 @@ herbSchema.index({ category: 1 });
 // Create text index for search
 herbSchema.index({
   commonName: 'text',
+  commonNameMr: 'text',
   botanicalName: 'text',
-  sanskritName: 'text'
+  sanskritName: 'text',
+  'about.mr': 'text',
+  'about.en': 'text'
 });
 
 const Herb = mongoose.model('Herb', herbSchema);

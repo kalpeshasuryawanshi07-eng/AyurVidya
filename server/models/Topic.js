@@ -222,8 +222,11 @@ topicSchema.index({ difficulty: 1 });
 // Create text index for search
 topicSchema.index({
   title: 'text',
+  titleMr: 'text',
   introduction: 'text',
-  coreExplanation: 'text'
+  introductionMr: 'text',
+  coreExplanation: 'text',
+  coreExplanationMr: 'text'
 });
 
 const Topic = mongoose.model('Topic', topicSchema);

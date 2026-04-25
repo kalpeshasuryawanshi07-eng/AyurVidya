@@ -45,7 +45,7 @@ export default function Navbar() {
       <nav className={`${styles.navbar}${scrolled ? ` ${styles.scrolled}` : ""}`}>
         <div className={styles.inner}>
           <Link to="/" className={styles.logo} onClick={() => { setMobileMenuOpen(false); setUserMenuOpen(false); }}>
-            <span className={styles.logoIcon}>🌿</span>
+            <img src="/logo.png" alt="AyurVidya Logo" className={styles.logoImage} />
             <span className={styles.logoText}>AyurVidya</span>
           </Link>
 
